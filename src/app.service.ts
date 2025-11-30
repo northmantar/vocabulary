@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Readable } from 'stream';
 import csvParser from 'csv-parser';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vocabulary } from 'entities/vocabulary.entity';
 import { Grammar } from 'entities/grammar.entity';
@@ -8,7 +9,9 @@ import { Grammar } from 'entities/grammar.entity';
 @Injectable()
 export class AppService {
   constructor(
+    @InjectRepository(Vocabulary)
     private readonly vocabularyRepository: Repository<Vocabulary>,
+    @InjectRepository(Grammar)
     private readonly grammarRepository: Repository<Grammar>,
   ) {}
 
