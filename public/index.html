@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary & Grammar</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>일본어 공부 앱</h1>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="vocabulary">Vocabulary</button>
+            <button class="tab-button" data-tab="grammar">Grammar</button>
+        </div>
+
+        <div class="tab-content active" id="vocabulary-tab">
+            <div class="upload-section">
+                <h2>Upload Vocabulary CSV</h2>
+                <p class="file-format">CSV Format: kanji, furigana, meaning</p>
+                <input type="file" id="vocabulary-file" accept=".csv">
+                <button onclick="uploadFile('vocabulary')">Upload</button>
+                <div id="vocabulary-upload-status" class="upload-status"></div>
+            </div>
+
+            <div class="list-section">
+                <h2>Vocabulary List</h2>
+                <div id="vocabulary-list" class="item-list"></div>
+                <div class="pagination" id="vocabulary-pagination"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="grammar-tab">
+            <div class="upload-section">
+                <h2>Upload Grammar CSV</h2>
+                <p class="file-format">CSV Format: grammar, meaning, memo</p>
+                <input type="file" id="grammar-file" accept=".csv">
+                <button onclick="uploadFile('grammar')">Upload</button>
+                <div id="grammar-upload-status" class="upload-status"></div>
+            </div>
+
+            <div class="list-section">
+                <h2>Grammar List</h2>
+                <div id="grammar-list" class="item-list"></div>
+                <div class="pagination" id="grammar-pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="card-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <button class="nav-arrow nav-arrow-left" id="prev-arrow" onclick="navigateCard(-1)">&lsaquo;</button>
+            <div class="card" id="card-content"></div>
+            <button class="nav-arrow nav-arrow-right" id="next-arrow" onclick="navigateCard(1)">&rsaquo;</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
