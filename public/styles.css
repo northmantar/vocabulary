@@ -70,18 +70,64 @@ header h1 {
     display: block;
 }
 
+.upload-toggle-container {
+    margin-bottom: 30px;
+}
+
+.expand-button {
+    background: #f9f9f9;
+    color: #4a90e2;
+    padding: 12px 20px;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+    text-align: left;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.expand-button:hover {
+    background: #f0f0f0;
+    border-color: #4a90e2;
+    box-shadow: none;
+}
+
 .upload-section {
     background: #f9f9f9;
     padding: 25px;
     border-radius: 8px;
-    margin-bottom: 30px;
     border: 2px dashed #ddd;
 }
 
-.upload-section h2 {
+.upload-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 15px;
+}
+
+.upload-section h2 {
+    margin: 0;
     color: #333;
     font-size: 20px;
+}
+
+.toggle-button {
+    background: transparent;
+    border: none;
+    color: #4a90e2;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: color 0.2s;
+    min-width: auto;
+}
+
+.toggle-button:hover {
+    color: #3a7bc8;
+    box-shadow: none;
 }
 
 .file-format {
@@ -150,7 +196,7 @@ header h1 {
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
     text-align: center;
 }
 
@@ -163,12 +209,11 @@ header h1 {
 .download-button:hover {
     background: #4a90e2;
     color: white;
-    transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
 }
 
 .download-button:active {
-    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
 }
 
 input[type="file"] {
@@ -189,17 +234,16 @@ button {
     cursor: pointer;
     font-size: 16px;
     font-weight: 500;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: background 0.2s, box-shadow 0.2s;
 }
 
 button:hover {
-    transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
     background: #3a7bc8;
 }
 
 button:active {
-    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
 }
 
 .upload-status {
@@ -223,6 +267,12 @@ button:active {
     margin-bottom: 20px;
     color: #333;
     font-size: 22px;
+}
+
+.list-title, .review-title {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
 }
 
 .item-list {
@@ -269,14 +319,13 @@ button:active {
     border-radius: 8px;
     padding: 20px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     position: relative;
 }
 
 .item-card:hover {
     border-color: #4a90e2;
     box-shadow: 0 5px 15px rgba(74, 144, 226, 0.15);
-    transform: translateY(-2px);
 }
 
 .item-card .main-text {
@@ -564,5 +613,4 @@ button:active {
     background: #e8e8e8;
     border-color: #4a90e2;
     color: #666 !important;
-    transform: scale(1.02);
 }

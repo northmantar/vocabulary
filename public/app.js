@@ -575,6 +575,22 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
+// Toggle upload section visibility
+function toggleUploadSection(type, event) {
+  const uploadSection = document.getElementById(`${type}-upload-section`);
+  const expandButton = document.getElementById(`${type}-expand-button`);
+
+  if (uploadSection.style.display === 'none') {
+    // Show the upload section
+    uploadSection.style.display = 'block';
+    expandButton.style.display = 'none';
+  } else {
+    // Hide the upload section
+    uploadSection.style.display = 'none';
+    expandButton.style.display = 'block';
+  }
+}
+
 // Toggle star for items in the list
 async function toggleStar(type, id, buttonElement) {
   // Store current state for rollback if needed

@@ -9,58 +9,78 @@
 <body>
     <div class="container">
         <header>
-            <h1>Vocabulary & Grammar</h1>
+            <h1>N3 Vocabulary & Grammar</h1>
         </header>
 
         <div class="tabs">
-            <button class="tab-button active" data-tab="vocabulary">Vocabulary</button>
-            <button class="tab-button" data-tab="grammar">Grammar</button>
-            <button class="tab-button" data-tab="review">Review</button>
+            <button class="tab-button active" data-tab="vocabulary">単語(たんご, 단어)</button>
+            <button class="tab-button" data-tab="grammar">文法(ぶんぽう, 문법)</button>
+            <button class="tab-button" data-tab="review">復習(ふくしゅう, 복습)</button>
         </div>
 
         <div class="tab-content active" id="vocabulary-tab">
-            <div class="upload-section">
-                <h2>Upload Vocabulary CSV</h2>
-                <p class="file-format">CSV Format: kanji, furigana, meaning</p>
-                <div class="button-group">
-                    <input type="file" id="vocabulary-file" accept=".csv">
-                    <a href="sample-vocabulary.csv" download class="download-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="download-icon">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                        </svg>
-                        Download Sample
-                    </a>
-                    <button onclick="uploadFile('vocabulary')">Upload</button>
+            <div class="upload-toggle-container">
+                <button class="expand-button" id="vocabulary-expand-button" onclick="toggleUploadSection('vocabulary', event)" style="display: none;">
+                    ▶ Show Upload Section
+                </button>
+                <div class="upload-section" id="vocabulary-upload-section">
+                    <div class="upload-header">
+                        <h2>Upload Vocabulary CSV</h2>
+                        <button class="toggle-button" onclick="toggleUploadSection('vocabulary', event)" aria-label="Toggle upload section">▼</button>
+                    </div>
+                    <div class="upload-content">
+                        <p class="file-format">CSV Format: kanji, furigana, meaning</p>
+                        <div class="button-group">
+                            <input type="file" id="vocabulary-file" accept=".csv">
+                            <a href="sample-vocabulary.csv" download class="download-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="download-icon">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Download Sample
+                            </a>
+                            <button onclick="uploadFile('vocabulary')">Upload</button>
+                        </div>
+                        <div id="vocabulary-upload-status" class="upload-status"></div>
+                    </div>
                 </div>
-                <div id="vocabulary-upload-status" class="upload-status"></div>
             </div>
 
             <div class="list-section">
-                <h2>Vocabulary List</h2>
+                <div class="list-title"><h2>単語リスト</h2><p>(たんごりすと, 단어 리스트)</p></div>
                 <div id="vocabulary-list" class="item-list scrollable-list"></div>
                 <div id="vocabulary-loading" class="loading-indicator" style="display: none;">Loading more...</div>
             </div>
         </div>
 
         <div class="tab-content" id="grammar-tab">
-            <div class="upload-section">
-                <h2>Upload Grammar CSV</h2>
-                <p class="file-format">CSV Format: grammar, meaning, memo</p>
-                <div class="button-group">
-                    <input type="file" id="grammar-file" accept=".csv">
-                    <a href="sample-grammar.csv" download class="download-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="download-icon">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                        </svg>
-                        Download Sample
-                    </a>
-                    <button onclick="uploadFile('grammar')">Upload</button>
+            <div class="upload-toggle-container">
+                <button class="expand-button" id="grammar-expand-button" onclick="toggleUploadSection('grammar', event)" style="display: none;">
+                    ▶ Show Upload Section
+                </button>
+                <div class="upload-section" id="grammar-upload-section">
+                    <div class="upload-header">
+                        <h2>Upload Grammar CSV</h2>
+                        <button class="toggle-button" onclick="toggleUploadSection('grammar', event)" aria-label="Toggle upload section">▼</button>
+                    </div>
+                    <div class="upload-content">
+                        <p class="file-format">CSV Format: grammar, meaning, memo</p>
+                        <div class="button-group">
+                            <input type="file" id="grammar-file" accept=".csv">
+                            <a href="sample-grammar.csv" download class="download-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" class="download-icon">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Download Sample
+                            </a>
+                            <button onclick="uploadFile('grammar')">Upload</button>
+                        </div>
+                        <div id="grammar-upload-status" class="upload-status"></div>
+                    </div>
                 </div>
-                <div id="grammar-upload-status" class="upload-status"></div>
             </div>
 
             <div class="list-section">
-                <h2>Grammar List</h2>
+                <div class="list-title"><h2>文法リスト</h2><p>(ぶんぽうりすと, 문법 리스트)</p></div>
                 <div id="grammar-list" class="item-list scrollable-list"></div>
                 <div id="grammar-loading" class="loading-indicator" style="display: none;">Loading more...</div>
             </div>
@@ -68,13 +88,13 @@
 
         <div class="tab-content" id="review-tab">
             <div class="list-section">
-                <h2>Starred Vocabulary</h2>
+                <div class="review-title"><h2>紛らわしい単語</h2><p>(まぎらわしいたんご, 헷갈리는 단어)</p></div>
                 <div id="review-vocabulary-list" class="item-list scrollable-list"></div>
                 <div id="review-vocabulary-loading" class="loading-indicator" style="display: none;">Loading more...</div>
             </div>
 
             <div class="list-section">
-                <h2>Starred Grammar</h2>
+                <div class="review-title"><h2>紛らわしい文法</h2><p>(まぎらわしいぶんぽう, 헷갈리는 문법)</p></div>
                 <div id="review-grammar-list" class="item-list scrollable-list"></div>
                 <div id="review-grammar-loading" class="loading-indicator" style="display: none;">Loading more...</div>
             </div>
