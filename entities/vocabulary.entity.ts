@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
 export class Vocabulary {
@@ -14,4 +14,7 @@ export class Vocabulary {
 
   @Column({ type: 'text', comment: '단어 뜻' })
   meaning: string;
+
+  @Column({ type: 'boolean', default: false, comment: '즐겨찾기' })
+  star: boolean;
 }

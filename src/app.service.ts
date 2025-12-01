@@ -22,11 +22,12 @@ export class AppService {
     return 'Hello World!';
   }
 
-  async getVocabulary(pageOptionsDto: PageOptionsDto) {
+  async getVocabulary(pageOptionsDto: PageOptionsDto, starred: boolean = false) {
     const [vocabularies, total] = await this.vocabularyRepository.findAndCount({
       skip: pageOptionsDto.skip,
       take: pageOptionsDto.pageSize,
-      order: { id: 'DESC' },
+      order: { star: 'DESC', id: 'DESC' },
+      ...(starred ? { where: { star: true } } : {}),
     });
 
     const pageMetaDto = new PageMetaDto({ pageOptionsDto, total });
@@ -37,6 +38,11 @@ export class AppService {
     } else {
       throw new NotFoundException('No more data');
     }
+  }
+
+  async getVocabularyById(id: number) {
+    const vocabulary = await this.vocabularyRepository.findOne({ where: { id } });
+    return vocabulary;
   }
 
   async saveVocabularyFile(file: Express.Multer.File) {
@@ -66,11 +72,12 @@ export class AppService {
     return { success: true };
   }
 
-  async getGrammar(pageOptionsDto: PageOptionsDto) {
+  async getGrammar(pageOptionsDto: PageOptionsDto, starred: boolean = false) {
     const [grammars, total] = await this.grammarRepository.findAndCount({
       skip: pageOptionsDto.skip,
       take: pageOptionsDto.pageSize,
-      order: { id: 'DESC' },
+      order: { star: 'DESC', id: 'DESC' },
+      ...(starred ? { where: { star: true } } : {}),
     });
 
     const pageMetaDto = new PageMetaDto({ pageOptionsDto, total });
@@ -81,6 +88,11 @@ export class AppService {
     } else {
       throw new NotFoundException('No more data');
     }
+  }
+
+  async getGrammarById(id: number) {
+    const grammar = await this.grammarRepository.findOne({ where: { id } });
+    return grammar;
   }
 
   async saveGrammarFile(file: Express.Multer.File) {
@@ -107,6 +119,20 @@ export class AppService {
         });
       });
 
+    return { success: true };
+  }
+
+  async starVocabulary(id: number) {
+    const vocabulary = await this.vocabularyRepository.findOne({ select: ['id', 'star'], where: { id } });
+    vocabulary.star = !vocabulary.star;
+    await this.vocabularyRepository.save(vocabulary);
+    return { success: true };
+  }
+
+  async starGrammar(id: number) {
+    const grammar = await this.grammarRepository.findOne({ select: ['id', 'star'], where: { id } });
+    grammar.star = !grammar.star;
+    await this.grammarRepository.save(grammar);
     return { success: true };
   }
 }

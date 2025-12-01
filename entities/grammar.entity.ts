@@ -14,4 +14,7 @@ export class Grammar {
 
   @Column({ type: 'text', comment: '추가 메모' })
   memo: string;
+
+  @Column({ type: 'boolean', default: false, comment: '즐겨찾기' })
+  star: boolean;
 }
