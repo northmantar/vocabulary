@@ -545,3 +545,24 @@ button:active {
     color: #999;
     font-size: 18px;
 }
+
+.hidden {
+    background: #f0f0f0;
+    color: #999 !important;
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 2px dashed #ccc;
+    font-style: italic;
+    transition: all 0.3s ease;
+}
+
+.revealable {
+    cursor: pointer;
+}
+
+.revealable:hover {
+    background: #e8e8e8;
+    border-color: #4a90e2;
+    color: #666 !important;
+    transform: scale(1.02);
+}

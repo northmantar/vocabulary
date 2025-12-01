@@ -21,6 +21,8 @@ let hasMoreReviewGrammar = true;
 let currentItemList = [];
 let currentItemIndex = 0;
 let currentItemType = '';
+let isReviewMode = false;
+let isRevealed = false;
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
@@ -355,7 +357,7 @@ async function loadReviewVocabulary(pageNumber, append = false) {
     const itemsHtml = data.data
       .map(
         (item) => `
-            <div class="item-card" onclick="showVocabularyCard(${item.id})">
+            <div class="item-card" onclick="showVocabularyCard(${item.id}, true)">
                 <button class="star-button ${item.star ? 'starred' : ''}"
                         onclick="event.stopPropagation(); toggleStarAndRefreshReview('vocabulary', ${item.id}, this)"
                         aria-label="Star this item">
@@ -422,7 +424,7 @@ async function loadReviewGrammar(pageNumber, append = false) {
     const itemsHtml = data.data
       .map(
         (item) => `
-            <div class="item-card" onclick="showGrammarCard(${item.id})">
+            <div class="item-card" onclick="showGrammarCard(${item.id}, true)">
                 <button class="star-button ${item.star ? 'starred' : ''}"
                         onclick="event.stopPropagation(); toggleStarAndRefreshReview('grammar', ${item.id}, this)"
                         aria-label="Star this item">
@@ -452,7 +454,7 @@ async function loadReviewGrammar(pageNumber, append = false) {
 
 
 // Show vocabulary card in modal
-async function showVocabularyCard(id) {
+async function showVocabularyCard(id, reviewMode = false) {
   try {
     const response = await fetch(`${API_BASE_URL}/vocabulary?pageNumber=1&pageSize=1000`);
     const data = await response.json();
@@ -460,6 +462,8 @@ async function showVocabularyCard(id) {
     currentItemList = data.data;
     currentItemType = 'vocabulary';
     currentItemIndex = currentItemList.findIndex((v) => v.id === id);
+    isReviewMode = reviewMode;
+    isRevealed = false;
 
     if (currentItemIndex === -1) {
       alert('Vocabulary item not found');
@@ -475,7 +479,7 @@ async function showVocabularyCard(id) {
 }
 
 // Show grammar card in modal
-async function showGrammarCard(id) {
+async function showGrammarCard(id, reviewMode = false) {
   try {
     const response = await fetch(`${API_BASE_URL}/grammar?pageNumber=1&pageSize=1000`);
     const data = await response.json();
@@ -483,6 +487,8 @@ async function showGrammarCard(id) {
     currentItemList = data.data;
     currentItemType = 'grammar';
     currentItemIndex = currentItemList.findIndex((g) => g.id === id);
+    isReviewMode = reviewMode;
+    isRevealed = false;
 
     if (currentItemIndex === -1) {
       alert('Grammar item not found');
@@ -503,6 +509,7 @@ function displayCurrentCard() {
   const cardContent = document.getElementById('card-content');
 
   if (currentItemType === 'vocabulary') {
+    const shouldHideFurigana = isReviewMode && !isRevealed;
     cardContent.innerHTML = `
       <button class="star-button-large ${item.star ? 'starred' : ''}"
               onclick="toggleStarInModal('vocabulary', ${item.id}, this)"
@@ -510,10 +517,14 @@ function displayCurrentCard() {
         ${item.star ? '★' : '☆'}
       </button>
       <div class="card-title">${escapeHtml(item.kanji)}</div>
-      <div class="card-subtitle">${escapeHtml(item.furigana)}</div>
+      <div class="card-subtitle ${shouldHideFurigana ? 'hidden revealable' : ''}"
+           ${shouldHideFurigana ? 'onclick="revealContent()"' : ''}>
+        ${shouldHideFurigana ? 'Click to reveal' : escapeHtml(item.furigana)}
+      </div>
       <div class="card-meaning">${escapeHtml(item.meaning)}</div>
     `;
   } else if (currentItemType === 'grammar') {
+    const shouldHideMeaning = isReviewMode && !isRevealed;
     cardContent.innerHTML = `
       <button class="star-button-large ${item.star ? 'starred' : ''}"
               onclick="toggleStarInModal('grammar', ${item.id}, this)"
@@ -521,10 +532,19 @@ function displayCurrentCard() {
         ${item.star ? '★' : '☆'}
       </button>
       <div class="card-title">${escapeHtml(item.grammar)}</div>
-      <div class="card-meaning">${escapeHtml(item.meaning)}</div>
+      <div class="card-meaning ${shouldHideMeaning ? 'hidden revealable' : ''}"
+           ${shouldHideMeaning ? 'onclick="revealContent()"' : ''}>
+        ${shouldHideMeaning ? 'Click to reveal' : escapeHtml(item.meaning)}
+      </div>
       ${item.memo ? `<div class="card-memo">${escapeHtml(item.memo)}</div>` : ''}
     `;
   }
+}
+
+// Reveal hidden content in review mode
+function revealContent() {
+  isRevealed = true;
+  displayCurrentCard();
 }
 
 // Update navigation button states
@@ -542,6 +562,7 @@ function navigateCard(direction) {
 
   if (newIndex >= 0 && newIndex < currentItemList.length) {
     currentItemIndex = newIndex;
+    isRevealed = false; // Reset reveal state when navigating
     displayCurrentCard();
     updateNavigationButtons();
   }
