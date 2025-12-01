@@ -1,15 +1,15 @@
-import { BadRequestException, Controller, Get, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import type { Multer } from 'multer';
+import { PageOptionsDto } from './page/page-options.dto';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('vocabulary')
+  async getVocabulary(@Query() pageOptionsDto: PageOptionsDto) {
+    return this.appService.getVocabulary(pageOptionsDto);
   }
 
   @Post('vocabulary')
@@ -42,5 +42,10 @@ export class AppController {
   )
   async saveGrammarFile(@UploadedFile() file: Express.Multer.File) {
     await this.appService.saveGrammarFile(file);
+  }
+
+  @Get('grammar')
+  async getGrammar(@Query() pageOptionsDto: PageOptionsDto) {
+    return this.appService.getGrammar(pageOptionsDto);
   }
 }

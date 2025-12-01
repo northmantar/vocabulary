@@ -1,10 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Readable } from 'stream';
-import csvParser from 'csv-parser';
+import * as csvParser from 'csv-parser';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vocabulary } from 'entities/vocabulary.entity';
 import { Grammar } from 'entities/grammar.entity';
+import { PageOptionsDto } from './page/page-options.dto';
+import { PageMetaDto } from './page/page-meta.dto';
+import { PageDto } from './page/page.dto';
 
 @Injectable()
 export class AppService {
@@ -17,6 +20,23 @@ export class AppService {
 
   getHello(): string {
     return 'Hello World!';
+  }
+
+  async getVocabulary(pageOptionsDto: PageOptionsDto) {
+    const [vocabularies, total] = await this.vocabularyRepository.findAndCount({
+      skip: pageOptionsDto.skip,
+      take: pageOptionsDto.pageSize,
+      order: { id: 'DESC' },
+    });
+
+    const pageMetaDto = new PageMetaDto({ pageOptionsDto, total });
+    const lastPage = pageMetaDto.lastPage;
+
+    if (!vocabularies.length || lastPage >= pageOptionsDto.pageNumber) {
+      return new PageDto<Vocabulary>(vocabularies, pageMetaDto);
+    } else {
+      throw new NotFoundException('No more data');
+    }
   }
 
   async saveVocabularyFile(file: Express.Multer.File) {
@@ -40,6 +60,23 @@ export class AppService {
       });
 
     return { success: true };
+  }
+
+  async getGrammar(pageOptionsDto: PageOptionsDto) {
+    const [grammars, total] = await this.grammarRepository.findAndCount({
+      skip: pageOptionsDto.skip,
+      take: pageOptionsDto.pageSize,
+      order: { id: 'DESC' },
+    });
+
+    const pageMetaDto = new PageMetaDto({ pageOptionsDto, total });
+    const lastPage = pageMetaDto.lastPage;
+
+    if (!grammars.length || lastPage >= pageOptionsDto.pageNumber) {
+      return new PageDto<Grammar>(grammars, pageMetaDto);
+    } else {
+      throw new NotFoundException('No more data');
+    }
   }
 
   async saveGrammarFile(file: Express.Multer.File) {
