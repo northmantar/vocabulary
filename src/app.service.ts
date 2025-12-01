@@ -23,6 +23,7 @@ export class AppService {
   }
 
   async getVocabulary(pageOptionsDto: PageOptionsDto, starred: boolean = false) {
+    console.log(`> pageOptionsDto: ${JSON.stringify(pageOptionsDto)}`);
     const [vocabularies, total] = await this.vocabularyRepository.findAndCount({
       skip: pageOptionsDto.skip,
       take: pageOptionsDto.pageSize,
@@ -33,7 +34,7 @@ export class AppService {
     const pageMetaDto = new PageMetaDto({ pageOptionsDto, total });
     const lastPage = pageMetaDto.lastPage;
 
-    if (!vocabularies.length || lastPage >= pageOptionsDto.pageNumber) {
+    if (!vocabularies.length || lastPage >= pageMetaDto.pageNumber) {
       return new PageDto<Vocabulary>(vocabularies, pageMetaDto);
     } else {
       throw new NotFoundException('No more data');
@@ -83,7 +84,7 @@ export class AppService {
     const pageMetaDto = new PageMetaDto({ pageOptionsDto, total });
     const lastPage = pageMetaDto.lastPage;
 
-    if (!grammars.length || lastPage >= pageOptionsDto.pageNumber) {
+    if (!grammars.length || lastPage >= pageMetaDto.pageNumber) {
       return new PageDto<Grammar>(grammars, pageMetaDto);
     } else {
       throw new NotFoundException('No more data');
