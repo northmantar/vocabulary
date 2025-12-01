@@ -1,11 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
 
 @Entity()
 export class Grammar {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'text', comment: '문법 구문' })
+  @Column({ type: 'varchar', length: 512, comment: '문법 구문' })
+  @Unique(['grammar'])
   grammar: string;
 
   @Column({ type: 'text', comment: '문법 의미' })

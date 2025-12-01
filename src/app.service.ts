@@ -45,18 +45,22 @@ export class AppService {
     bufferStream.push(file.buffer);
     bufferStream.push(null);
 
+    const upserts = [];
     bufferStream
       .pipe(csvParser({ headers: ['kanji', 'furigana', 'meaning'], skipLines: 1 }))
       .on('data', (data) => results.push(data))
       .on('end', async () => {
         for (const result of results) {
-          const vocabulary = this.vocabularyRepository.create({
+          upserts.push({
             kanji: result.kanji,
             furigana: result.furigana,
             meaning: result.meaning,
           });
-          await this.vocabularyRepository.save(vocabulary);
         }
+        await this.vocabularyRepository.upsert(upserts, {
+          conflictPaths: ['kanji'],
+          skipUpdateIfNoValuesChanged: true,
+        });
       });
 
     return { success: true };
@@ -85,18 +89,22 @@ export class AppService {
     bufferStream.push(file.buffer);
     bufferStream.push(null);
 
+    const upserts = [];
     bufferStream
       .pipe(csvParser({ headers: ['grammar', 'meaning', 'memo'], skipLines: 1 }))
       .on('data', (data) => results.push(data))
       .on('end', async () => {
         for (const result of results) {
-          const grammar = this.grammarRepository.create({
+          upserts.push({
             grammar: result.grammar,
             meaning: result.meaning,
             memo: result.memo,
           });
-          await this.grammarRepository.save(grammar);
         }
+        await this.grammarRepository.upsert(upserts, {
+          conflictPaths: ['grammar'],
+          skipUpdateIfNoValuesChanged: true,
+        });
       });
 
     return { success: true };
