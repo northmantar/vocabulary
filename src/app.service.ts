@@ -23,7 +23,6 @@ export class AppService {
   }
 
   async getVocabulary(pageOptionsDto: PageOptionsDto, starred: boolean = false) {
-    console.log(`> pageOptionsDto: ${JSON.stringify(pageOptionsDto)}`);
     const [vocabularies, total] = await this.vocabularyRepository.findAndCount({
       skip: pageOptionsDto.skip,
       take: pageOptionsDto.pageSize,
