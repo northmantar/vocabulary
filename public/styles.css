@@ -842,6 +842,8 @@ button:active {
     transition: all 0.3s ease;
     position: relative;
     z-index: 1001;
+    padding: 0;
+    min-width: auto;
 }
 
 .fab:hover {
@@ -857,6 +859,9 @@ button:active {
 .fab-icon {
     width: 28px;
     height: 28px;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    flex-shrink: 0;
 }
 
 .fab-menu {
