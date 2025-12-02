@@ -785,6 +785,48 @@ function updateListItemStar(type, id, isStarred) {
   });
 }
 
+// Update item content in the visible list without reloading
+function updateListItem(type, id, updatedItem) {
+  const listDiv = document.getElementById(`${type}-list`);
+  const reviewListDiv = document.getElementById(`review-${type}-list`);
+
+  // Update in main list
+  updateItemInList(listDiv, type, id, updatedItem, false);
+
+  // Update in review list if it exists
+  if (currentTab === 'review') {
+    updateItemInList(reviewListDiv, type, id, updatedItem, true);
+  }
+}
+
+// Helper function to update a specific item card in a list
+function updateItemInList(listDiv, type, id, updatedItem, isReview) {
+  const cards = listDiv.querySelectorAll('.item-card');
+
+  cards.forEach((card) => {
+    // Check if this card matches the item ID by examining the onclick attribute
+    const onclickAttr = card.getAttribute('onclick');
+    if (onclickAttr && onclickAttr.includes(`(${id}`)) {
+      // Found the matching card - update its content
+      if (type === 'vocabulary') {
+        const mainText = card.querySelector('.main-text');
+        const subText = card.querySelector('.sub-text');
+        const meaning = card.querySelector('.meaning');
+
+        if (mainText) mainText.textContent = updatedItem.kanji;
+        if (subText) subText.textContent = updatedItem.furigana;
+        if (meaning) meaning.textContent = updatedItem.meaning;
+      } else if (type === 'grammar') {
+        const mainText = card.querySelector('.main-text');
+        const meaning = card.querySelector('.meaning');
+
+        if (mainText) mainText.textContent = updatedItem.grammar;
+        if (meaning) meaning.textContent = updatedItem.meaning;
+      }
+    }
+  });
+}
+
 // Toggle star and refresh review tab if active
 async function toggleStarAndRefreshReview(type, id, buttonElement) {
   // Store current state for rollback if needed
@@ -934,26 +976,8 @@ async function saveChanges() {
     // Refresh display
     displayCurrentCard();
 
-    // Refresh the list to show updated data
-    if (currentItemType === 'vocabulary') {
-      vocabularyPage = 1;
-      hasMoreVocabulary = true;
-      loadVocabulary(1, false);
-      if (currentTab === 'review') {
-        reviewVocabularyPage = 1;
-        hasMoreReviewVocabulary = true;
-        loadReviewVocabulary(1, false);
-      }
-    } else if (currentItemType === 'grammar') {
-      grammarPage = 1;
-      hasMoreGrammar = true;
-      loadGrammar(1, false);
-      if (currentTab === 'review') {
-        reviewGrammarPage = 1;
-        hasMoreReviewGrammar = true;
-        loadReviewGrammar(1, false);
-      }
-    }
+    // Update the specific item in the visible list without reloading
+    updateListItem(currentItemType, id, currentItemList[currentItemIndex]);
 
     alert('Changes saved successfully!');
   } catch (error) {
