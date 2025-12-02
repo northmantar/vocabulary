@@ -1000,8 +1000,8 @@ async function saveChanges() {
       const furigana = document.getElementById('edit-furigana').value.trim();
       const meaning = document.getElementById('edit-meaning').value.trim();
 
-      if (!kanji || !furigana || !meaning) {
-        alert('모든 필드의 값을 입력해주세요.');
+      if (!kanji || !meaning) {
+        alert('한자와 뜻을 입력해주세요.');
         return;
       }
 
@@ -1013,7 +1013,7 @@ async function saveChanges() {
       const memo = document.getElementById('edit-memo').value.trim();
 
       if (!grammar || !meaning) {
-        alert('문법과 뜻 필드를 입력해주세요.');
+        alert('문법과 뜻을 입력해주세요.');
         return;
       }
 

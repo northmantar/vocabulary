@@ -28,7 +28,7 @@ export class AppService {
   async getVocabulary(pageOptionsDto: PageOptionsDto, starred: boolean = false, keyword?: string) {
     let where: FindOptionsWhere<Vocabulary> | FindOptionsWhere<Vocabulary>[] | null = null;
     if (keyword) {
-      where = [{ kanji: Like(`%${keyword}%`) }, { furigana: Like(`%${keyword}%`) }];
+      where = [{ kanji: Like(`%${keyword}%`) }, { furigana: Like(`%${keyword}%`) }, { meaning: Like(`%${keyword}%`) }];
     }
     if (starred) {
       if (Array.isArray(where) && where.length) {
@@ -110,7 +110,7 @@ export class AppService {
   async getGrammar(pageOptionsDto: PageOptionsDto, starred: boolean = false, keyword?: string) {
     let where: FindOptionsWhere<Grammar> | FindOptionsWhere<Grammar>[] | null = null;
     if (keyword) {
-      where = [{ grammar: Like(`%${keyword}%`) }, { furigana: Like(`%${keyword}%`) }];
+      where = [{ grammar: Like(`%${keyword}%`) }, { furigana: Like(`%${keyword}%`) }, { meaning: Like(`%${keyword}%`) }];
     }
     if (starred) {
       if (Array.isArray(where) && where.length) {
