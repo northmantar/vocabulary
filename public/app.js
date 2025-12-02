@@ -1173,8 +1173,8 @@ async function submitCreate(type) {
       const furigana = document.getElementById('create-furigana').value.trim();
       const meaning = document.getElementById('create-meaning').value.trim();
 
-      if (!kanji || !furigana || !meaning) {
-        alert('すべての必須項目を入力してください。 (모든 필수 항목을 입력해주세요.)');
+      if (!kanji || !meaning) {
+        alert('한자와 뜻을 입력해주세요.');
         return;
       }
 
@@ -1186,7 +1186,7 @@ async function submitCreate(type) {
       const memo = document.getElementById('create-memo').value.trim();
 
       if (!grammar || !meaning) {
-        alert('文法と意味を入力してください。 (문법과 의미를 입력해주세요.)');
+        alert('문법과 뜻을 입력해주세요.');
         return;
       }
 
@@ -1221,9 +1221,9 @@ async function submitCreate(type) {
       loadGrammar(1, false);
     }
 
-    alert('追加完了！ (추가 완료!)');
+    alert('추가 완료!');
   } catch (error) {
     console.error('Error creating item:', error);
-    alert(`追加に失敗しました: ${error.message} (추가에 실패했습니다)`);
+    alert(`추가에 실패했습니다`);
   }
 }
