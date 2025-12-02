@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Readable } from 'stream';
 import * as csvParser from 'csv-parser';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +8,8 @@ import { Grammar } from 'entities/grammar.entity';
 import { PageOptionsDto } from './page/page-options.dto';
 import { PageMetaDto } from './page/page-meta.dto';
 import { PageDto } from './page/page.dto';
+import { UpdateVocabularyDto } from './dto/update-voca.dto';
+import { UpdateGrammarDto } from './dto/update-grammar.dto';
 
 @Injectable()
 export class AppService {
@@ -72,6 +74,23 @@ export class AppService {
     return { success: true };
   }
 
+  async updateVocabulary(id: number, updateVocabularyDto: UpdateVocabularyDto) {
+    try {
+      const vocabulary = await this.vocabularyRepository.findOne({ where: { id } });
+      if (!vocabulary) {
+        throw new NotFoundException('Vocabulary not found');
+      }
+      vocabulary.kanji = updateVocabularyDto.kanji;
+      vocabulary.furigana = updateVocabularyDto.furigana;
+      vocabulary.meaning = updateVocabularyDto.meaning;
+      await this.vocabularyRepository.save(vocabulary);
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      throw new BadRequestException();
+    }
+  }
+
   async getGrammar(pageOptionsDto: PageOptionsDto, starred: boolean = false) {
     const [grammars, total] = await this.grammarRepository.findAndCount({
       skip: pageOptionsDto.skip,
@@ -120,6 +139,23 @@ export class AppService {
       });
 
     return { success: true };
+  }
+
+  async updateGrammar(id: number, updateGrammarDto: UpdateGrammarDto) {
+    try {
+      const grammar = await this.grammarRepository.findOne({ where: { id } });
+      if (!grammar) {
+        throw new NotFoundException('Grammar not found');
+      }
+      grammar.grammar = updateGrammarDto.grammar;
+      grammar.meaning = updateGrammarDto.meaning;
+      grammar.memo = updateGrammarDto.memo;
+      await this.grammarRepository.save(grammar);
+      return { success: true };
+    } catch (e) {
+      console.error(e);
+      throw new BadRequestException();
+    }
   }
 
   async starVocabulary(id: number) {

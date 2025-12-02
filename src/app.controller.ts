@@ -2,16 +2,19 @@ import {
   BadRequestException,
   Controller,
   Get,
-  Header,
   Param,
+  Put,
   Post,
   Query,
   UploadedFile,
   UseInterceptors,
+  Body,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PageOptionsDto } from './page/page-options.dto';
+import { UpdateVocabularyDto } from './dto/update-voca.dto';
+import { UpdateGrammarDto } from './dto/update-grammar.dto';
 
 @Controller()
 export class AppController {
@@ -43,6 +46,11 @@ export class AppController {
     await this.appService.saveVocabularyFile(file);
   }
 
+  @Put('vocabulary/:id')
+  async updateVocabulary(@Param('id') id: number, @Body() updateVocabularyDto: UpdateVocabularyDto) {
+    return this.appService.updateVocabulary(id, updateVocabularyDto);
+  }
+
   @Get('grammar')
   async getGrammar(@Query() pageOptionsDto: PageOptionsDto, @Query('starred') starred: boolean = false) {
     return this.appService.getGrammar(pageOptionsDto, starred);
@@ -67,6 +75,11 @@ export class AppController {
   )
   async saveGrammarFile(@UploadedFile() file: Express.Multer.File) {
     await this.appService.saveGrammarFile(file);
+  }
+
+  @Put('grammar/:id')
+  async updateGrammar(@Param('id') id: number, @Body() updateGrammarDto: UpdateGrammarDto) {
+    return this.appService.updateGrammar(id, updateGrammarDto);
   }
 
   @Post('vocabulary/:id/star')

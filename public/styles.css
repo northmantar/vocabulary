@@ -538,6 +538,13 @@ button:active {
     cursor: not-allowed;
 }
 
+.card-wrapper {
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .card {
     text-align: center;
     flex: 1;
@@ -613,4 +620,108 @@ button:active {
     background: #e8e8e8;
     border-color: #4a90e2;
     color: #666 !important;
+}
+
+/* Edit mode styles */
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.edit-button,
+.save-button,
+.cancel-button {
+    font-size: 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.edit-button {
+    background: #4a90e2;
+    color: white;
+    border: none;
+    padding: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+}
+
+.edit-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.edit-button:hover {
+    background: #3a7bc8;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.save-button,
+.cancel-button {
+    padding: 10px 25px;
+}
+
+.save-button {
+    background: #28a745;
+    color: white;
+    border: none;
+}
+
+.save-button:hover {
+    background: #218838;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.cancel-button {
+    background: #6c757d;
+    color: white;
+    border: none;
+}
+
+.cancel-button:hover {
+    background: #5a6268;
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.edit-field {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.edit-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.edit-field input,
+.edit-field textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.edit-field input:focus,
+.edit-field textarea:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.edit-field textarea {
+    min-height: 80px;
+    resize: vertical;
 }

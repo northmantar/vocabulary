@@ -23,6 +23,8 @@ let currentItemIndex = 0;
 let currentItemType = '';
 let isReviewMode = false;
 let isRevealed = false;
+let isEditMode = false;
+let originalItemData = null;
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
@@ -69,14 +71,27 @@ function setupModal() {
   const closeBtn = document.querySelector('.close');
 
   closeBtn.onclick = function () {
+    resetEditMode();
     modal.classList.remove('show');
   };
 
   window.onclick = function (event) {
     if (event.target === modal) {
+      resetEditMode();
       modal.classList.remove('show');
     }
   };
+}
+
+// Reset edit mode when closing modal
+function resetEditMode() {
+  if (isEditMode) {
+    isEditMode = false;
+    originalItemData = null;
+    document.getElementById('edit-button').style.display = 'inline-block';
+    document.getElementById('save-button').style.display = 'none';
+    document.getElementById('cancel-button').style.display = 'none';
+  }
 }
 
 // Setup scroll listeners for infinite scroll
@@ -510,34 +525,80 @@ function displayCurrentCard() {
 
   if (currentItemType === 'vocabulary') {
     const shouldHideFurigana = isReviewMode && !isRevealed;
-    cardContent.innerHTML = `
-      <button class="star-button-large ${item.star ? 'starred' : ''}"
-              onclick="toggleStarInModal('vocabulary', ${item.id}, this)"
-              aria-label="Star this item">
-        ${item.star ? '★' : '☆'}
-      </button>
-      <div class="card-title">${escapeHtml(item.kanji)}</div>
-      <div class="card-subtitle ${shouldHideFurigana ? 'hidden revealable' : ''}"
-           ${shouldHideFurigana ? 'onclick="revealContent()"' : ''}>
-        ${shouldHideFurigana ? 'Click to reveal' : escapeHtml(item.furigana)}
-      </div>
-      <div class="card-meaning">${escapeHtml(item.meaning)}</div>
-    `;
+
+    if (isEditMode) {
+      cardContent.innerHTML = `
+        <button class="star-button-large ${item.star ? 'starred' : ''}"
+                onclick="toggleStarInModal('vocabulary', ${item.id}, this)"
+                aria-label="Star this item">
+          ${item.star ? '★' : '☆'}
+        </button>
+        <div class="edit-field">
+          <label>Kanji:</label>
+          <input type="text" id="edit-kanji" value="${escapeHtml(item.kanji)}" />
+        </div>
+        <div class="edit-field">
+          <label>Furigana:</label>
+          <input type="text" id="edit-furigana" value="${escapeHtml(item.furigana)}" />
+        </div>
+        <div class="edit-field">
+          <label>Meaning:</label>
+          <textarea id="edit-meaning">${escapeHtml(item.meaning)}</textarea>
+        </div>
+      `;
+    } else {
+      cardContent.innerHTML = `
+        <button class="star-button-large ${item.star ? 'starred' : ''}"
+                onclick="toggleStarInModal('vocabulary', ${item.id}, this)"
+                aria-label="Star this item">
+          ${item.star ? '★' : '☆'}
+        </button>
+        <div class="card-title">${escapeHtml(item.kanji)}</div>
+        <div class="card-subtitle ${shouldHideFurigana ? 'hidden revealable' : ''}"
+             ${shouldHideFurigana ? 'onclick="revealContent()"' : ''}>
+          ${shouldHideFurigana ? 'Click to reveal' : escapeHtml(item.furigana)}
+        </div>
+        <div class="card-meaning">${escapeHtml(item.meaning)}</div>
+      `;
+    }
   } else if (currentItemType === 'grammar') {
     const shouldHideMeaning = isReviewMode && !isRevealed;
-    cardContent.innerHTML = `
-      <button class="star-button-large ${item.star ? 'starred' : ''}"
-              onclick="toggleStarInModal('grammar', ${item.id}, this)"
-              aria-label="Star this item">
-        ${item.star ? '★' : '☆'}
-      </button>
-      <div class="card-title">${escapeHtml(item.grammar)}</div>
-      <div class="card-meaning ${shouldHideMeaning ? 'hidden revealable' : ''}"
-           ${shouldHideMeaning ? 'onclick="revealContent()"' : ''}>
-        ${shouldHideMeaning ? 'Click to reveal' : escapeHtml(item.meaning)}
-      </div>
-      ${item.memo ? `<div class="card-memo">${escapeHtml(item.memo)}</div>` : ''}
-    `;
+
+    if (isEditMode) {
+      cardContent.innerHTML = `
+        <button class="star-button-large ${item.star ? 'starred' : ''}"
+                onclick="toggleStarInModal('grammar', ${item.id}, this)"
+                aria-label="Star this item">
+          ${item.star ? '★' : '☆'}
+        </button>
+        <div class="edit-field">
+          <label>Grammar:</label>
+          <input type="text" id="edit-grammar" value="${escapeHtml(item.grammar)}" />
+        </div>
+        <div class="edit-field">
+          <label>Meaning:</label>
+          <textarea id="edit-meaning">${escapeHtml(item.meaning)}</textarea>
+        </div>
+        <div class="edit-field">
+          <label>Memo:</label>
+          <textarea id="edit-memo">${escapeHtml(item.memo || '')}</textarea>
+        </div>
+      `;
+    } else {
+      cardContent.innerHTML = `
+        <button class="star-button-large ${item.star ? 'starred' : ''}"
+                onclick="toggleStarInModal('grammar', ${item.id}, this)"
+                aria-label="Star this item">
+          ${item.star ? '★' : '☆'}
+        </button>
+        <div class="card-title">${escapeHtml(item.grammar)}</div>
+        <div class="card-meaning ${shouldHideMeaning ? 'hidden revealable' : ''}"
+             ${shouldHideMeaning ? 'onclick="revealContent()"' : ''}>
+          ${shouldHideMeaning ? 'Click to reveal' : escapeHtml(item.meaning)}
+        </div>
+        ${item.memo ? `<div class="card-memo">${escapeHtml(item.memo)}</div>` : ''}
+      `;
+    }
   }
 }
 
@@ -558,6 +619,10 @@ function updateNavigationButtons() {
 
 // Navigate to previous or next card
 function navigateCard(direction) {
+  if (isEditMode) {
+    return; // Don't allow navigation while in edit mode
+  }
+
   const newIndex = currentItemIndex + direction;
 
   if (newIndex >= 0 && newIndex < currentItemList.length) {
@@ -576,7 +641,7 @@ function escapeHtml(text) {
 }
 
 // Toggle upload section visibility
-function toggleUploadSection(type, event) {
+function toggleUploadSection(type) {
   const uploadSection = document.getElementById(`${type}-upload-section`);
   const expandButton = document.getElementById(`${type}-expand-button`);
 
@@ -763,5 +828,136 @@ async function toggleStarAndRefreshReview(type, id, buttonElement) {
     }
 
     alert('Failed to update star status');
+  }
+}
+
+// Toggle edit mode
+function toggleEditMode() {
+  if (!isEditMode) {
+    // Entering edit mode - save original data
+    const item = currentItemList[currentItemIndex];
+    originalItemData = { ...item };
+    isEditMode = true;
+
+    // Update button visibility
+    document.getElementById('edit-button').style.display = 'none';
+    document.getElementById('save-button').style.display = 'inline-block';
+    document.getElementById('cancel-button').style.display = 'inline-block';
+    document.getElementById('prev-arrow').disabled = true;
+    document.getElementById('next-arrow').disabled = true;
+
+    displayCurrentCard();
+  }
+}
+
+// Cancel edit mode
+function cancelEdit() {
+  if (isEditMode) {
+    // Restore original data
+    if (originalItemData) {
+      currentItemList[currentItemIndex] = { ...originalItemData };
+      originalItemData = null;
+    }
+
+    isEditMode = false;
+
+    // Update button visibility
+    document.getElementById('edit-button').style.display = 'inline-block';
+    document.getElementById('save-button').style.display = 'none';
+    document.getElementById('cancel-button').style.display = 'none';
+    document.getElementById('prev-arrow').disabled = currentItemIndex === 0;
+    document.getElementById('next-arrow').disabled = currentItemIndex === currentItemList.length - 1;
+
+    displayCurrentCard();
+  }
+}
+
+// Save changes
+async function saveChanges() {
+  const item = currentItemList[currentItemIndex];
+  const id = item.id;
+
+  let updatedData = {};
+
+  try {
+    if (currentItemType === 'vocabulary') {
+      const kanji = document.getElementById('edit-kanji').value.trim();
+      const furigana = document.getElementById('edit-furigana').value.trim();
+      const meaning = document.getElementById('edit-meaning').value.trim();
+
+      if (!kanji || !furigana || !meaning) {
+        alert('All fields are required');
+        return;
+      }
+
+      updatedData = { kanji, furigana, meaning };
+    } else if (currentItemType === 'grammar') {
+      const grammar = document.getElementById('edit-grammar').value.trim();
+      const meaning = document.getElementById('edit-meaning').value.trim();
+      const memo = document.getElementById('edit-memo').value.trim();
+
+      if (!grammar || !meaning) {
+        alert('Grammar and meaning fields are required');
+        return;
+      }
+
+      updatedData = { grammar, meaning, memo };
+    }
+
+    // Send PUT request
+    const response = await fetch(`${API_BASE_URL}/${currentItemType}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save changes');
+    }
+
+    // Update the item in the current list
+    Object.assign(currentItemList[currentItemIndex], updatedData);
+
+    // Exit edit mode
+    isEditMode = false;
+    originalItemData = null;
+
+    // Update button visibility
+    document.getElementById('edit-button').style.display = 'inline-block';
+    document.getElementById('save-button').style.display = 'none';
+    document.getElementById('cancel-button').style.display = 'none';
+    document.getElementById('prev-arrow').disabled = currentItemIndex === 0;
+    document.getElementById('next-arrow').disabled = currentItemIndex === currentItemList.length - 1;
+
+    // Refresh display
+    displayCurrentCard();
+
+    // Refresh the list to show updated data
+    if (currentItemType === 'vocabulary') {
+      vocabularyPage = 1;
+      hasMoreVocabulary = true;
+      loadVocabulary(1, false);
+      if (currentTab === 'review') {
+        reviewVocabularyPage = 1;
+        hasMoreReviewVocabulary = true;
+        loadReviewVocabulary(1, false);
+      }
+    } else if (currentItemType === 'grammar') {
+      grammarPage = 1;
+      hasMoreGrammar = true;
+      loadGrammar(1, false);
+      if (currentTab === 'review') {
+        reviewGrammarPage = 1;
+        hasMoreReviewGrammar = true;
+        loadReviewGrammar(1, false);
+      }
+    }
+
+    alert('Changes saved successfully!');
+  } catch (error) {
+    console.error('Error saving changes:', error);
+    alert('Failed to save changes: ' + error.message);
   }
 }
