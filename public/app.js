@@ -481,7 +481,7 @@ async function showVocabularyCard(id, reviewMode = false) {
     isRevealed = false;
 
     if (currentItemIndex === -1) {
-      alert('Vocabulary item not found');
+      alert('단어를 찾을 수 없습니다.');
       return;
     }
 
@@ -489,7 +489,8 @@ async function showVocabularyCard(id, reviewMode = false) {
     updateNavigationButtons();
     document.getElementById('card-modal').classList.add('show');
   } catch (error) {
-    alert('Error loading vocabulary card: ' + error.message);
+    console.error(error);
+    alert('단어 카드 로딩에 실패했습니다.');
   }
 }
 
@@ -506,7 +507,7 @@ async function showGrammarCard(id, reviewMode = false) {
     isRevealed = false;
 
     if (currentItemIndex === -1) {
-      alert('Grammar item not found');
+      alert('문법을 찾을 수 없습니다.');
       return;
     }
 
@@ -514,7 +515,8 @@ async function showGrammarCard(id, reviewMode = false) {
     updateNavigationButtons();
     document.getElementById('card-modal').classList.add('show');
   } catch (error) {
-    alert('Error loading grammar card: ' + error.message);
+    console.error(error);
+    alert('문법 카드 로딩에 실패했습니다.');
   }
 }
 
@@ -693,7 +695,7 @@ async function toggleStar(type, id, buttonElement) {
       buttonElement.textContent = '☆';
     }
 
-    alert('Failed to update star status');
+    alert('즐겨찾기 상태 업데이트에 실패했습니다.');
   }
 }
 
@@ -762,7 +764,7 @@ async function toggleStarInModal(type, id, buttonElement) {
     // Rollback list item as well
     updateListItemStar(type, id, wasStarred);
 
-    alert('Failed to update star status');
+    alert('즐겨찾기 상태 업데이트에 실패했습니다.');
   }
 }
 
@@ -869,7 +871,7 @@ async function toggleStarAndRefreshReview(type, id, buttonElement) {
       buttonElement.textContent = '☆';
     }
 
-    alert('Failed to update star status');
+    alert('즐겨찾기 상태 업데이트에 실패했습니다.');
   }
 }
 
@@ -928,7 +930,7 @@ async function saveChanges() {
       const meaning = document.getElementById('edit-meaning').value.trim();
 
       if (!kanji || !furigana || !meaning) {
-        alert('All fields are required');
+        alert('모든 필드의 값을 입력해주세요.');
         return;
       }
 
@@ -939,7 +941,7 @@ async function saveChanges() {
       const memo = document.getElementById('edit-memo').value.trim();
 
       if (!grammar || !meaning) {
-        alert('Grammar and meaning fields are required');
+        alert('문법과 뜻 필드를 입력해주세요.');
         return;
       }
 
@@ -979,9 +981,9 @@ async function saveChanges() {
     // Update the specific item in the visible list without reloading
     updateListItem(currentItemType, id, currentItemList[currentItemIndex]);
 
-    alert('Changes saved successfully!');
+    alert('수정 완료!');
   } catch (error) {
     console.error('Error saving changes:', error);
-    alert('Failed to save changes: ' + error.message);
+    alert('수정에 실패했습니다.');
   }
 }
