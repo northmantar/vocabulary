@@ -1107,7 +1107,7 @@ function openCreateModal(type) {
   document.getElementById('fab-button').classList.remove('active');
 
   if (type === 'vocabulary') {
-    title.textContent = '単語を追加 (たんごをついか, 단어 추가)';
+    title.textContent = '단어 추가';
     formContent.innerHTML = `
       <div class="create-form">
         <div class="form-field">
@@ -1115,21 +1115,21 @@ function openCreateModal(type) {
           <input type="text" id="create-kanji" placeholder="例: 勉強" required />
         </div>
         <div class="form-field">
-          <label for="create-furigana">Furigana (ふりがな) <span style="color: #e74c3c;">*</span></label>
-          <input type="text" id="create-furigana" placeholder="例: べんきょう" required />
+          <label for="create-furigana">Furigana (ふりがな)</label>
+          <input type="text" id="create-furigana" placeholder="例: べんきょう" />
         </div>
         <div class="form-field">
           <label for="create-meaning">Meaning (의미) <span style="color: #e74c3c;">*</span></label>
           <input type="text" id="create-meaning" placeholder="例: 공부" required />
         </div>
         <div class="form-actions">
-          <button class="submit-button" onclick="submitCreate('vocabulary')">追加 (Add)</button>
-          <button class="cancel-form-button" onclick="closeCreateModal()">キャンセル (Cancel)</button>
+          <button class="submit-button" onclick="submitCreate('vocabulary')">Add</button>
+          <button class="cancel-form-button" onclick="closeCreateModal()">Cancel</button>
         </div>
       </div>
     `;
   } else if (type === 'grammar') {
-    title.textContent = '文法を追加 (ぶんぽうをついか, 문법 추가)';
+    title.textContent = '문법 추가';
     formContent.innerHTML = `
       <div class="create-form">
         <div class="form-field">
@@ -1149,8 +1149,8 @@ function openCreateModal(type) {
           <textarea id="create-memo" placeholder="例: 用法: V辞書形/Nの + ために"></textarea>
         </div>
         <div class="form-actions">
-          <button class="submit-button" onclick="submitCreate('grammar')">追加 (Add)</button>
-          <button class="cancel-form-button" onclick="closeCreateModal()">キャンセル (Cancel)</button>
+          <button class="submit-button" onclick="submitCreate('grammar')">Add</button>
+          <button class="cancel-form-button" onclick="closeCreateModal()">Cancel</button>
         </div>
       </div>
     `;
