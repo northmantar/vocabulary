@@ -1,11 +1,11 @@
-grammar,meaning,memo
-～ます,polite verb ending,used for present and future tense
-～ました,polite past tense,past tense of ます form
-～ません,polite negative,negative form of ます
-～て,te-form,used for connecting verbs and making requests
-～たい,want to,express desire to do something
-～ている,continuous action,present progressive tense
-～てください,please do,polite request
-～ないでください,please don't,polite negative request
-～と思います,I think that,express opinion
-～かもしれません,might/maybe,express possibility
+grammar,furigana,meaning,memo
+～ます,,polite verb ending,used for present and future tense
+～ました,,polite past tense,past tense of ます form
+～ません,,polite negative,negative form of ます
+～て,,te-form,used for connecting verbs and making requests
+～たい,,want to,express desire to do something
+～ている,,continuous action,present progressive tense
+～てください,,please do,polite request
+～ないでください,,please don't,polite negative request
+～と思います,～とおもいます,I think that,express opinion
+～かもしれません,,might/maybe,express possibility

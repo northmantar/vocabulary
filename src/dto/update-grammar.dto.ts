@@ -7,6 +7,10 @@ export class UpdateGrammarDto {
 
   @IsString()
   @IsOptional()
+  furigana: string;
+
+  @IsString()
+  @IsOptional()
   meaning: string;
 
   @IsString()

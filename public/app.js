@@ -16,6 +16,8 @@ let isLoadingReviewVocabulary = false;
 let hasMoreReviewVocabulary = true;
 let isLoadingReviewGrammar = false;
 let hasMoreReviewGrammar = true;
+let vocabularySearchKeyword = '';
+let grammarSearchKeyword = '';
 
 // Modal navigation state
 let currentItemList = [];
@@ -31,6 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
   setupTabs();
   setupModal();
   setupScrollListeners();
+  setupSearchListeners();
   loadVocabulary(vocabularyPage);
 });
 
@@ -93,6 +96,24 @@ function resetEditMode() {
     document.getElementById('save-button').style.display = 'none';
     document.getElementById('cancel-button').style.display = 'none';
   }
+}
+
+// Setup search input listeners for Enter key
+function setupSearchListeners() {
+  const vocabularySearchInput = document.getElementById('vocabulary-search');
+  const grammarSearchInput = document.getElementById('grammar-search');
+
+  vocabularySearchInput.addEventListener('keypress', function (event) {
+    if (event.key === 'Enter') {
+      searchVocabulary();
+    }
+  });
+
+  grammarSearchInput.addEventListener('keypress', function (event) {
+    if (event.key === 'Enter') {
+      searchGrammar();
+    }
+  });
 }
 
 // Setup scroll listeners for infinite scroll
@@ -218,7 +239,8 @@ async function loadVocabulary(pageNumber, append = false) {
       loadingDiv.style.display = 'block';
     }
 
-    const response = await fetch(`${API_BASE_URL}/vocabulary?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+    const keywordParam = vocabularySearchKeyword ? `&keyword=${encodeURIComponent(vocabularySearchKeyword)}` : '';
+    const response = await fetch(`${API_BASE_URL}/vocabulary?pageNumber=${pageNumber}&pageSize=${pageSize}${keywordParam}`);
 
     if (!response.ok) {
       throw new Error('Failed to load vocabulary');
@@ -285,7 +307,8 @@ async function loadGrammar(pageNumber, append = false) {
       loadingDiv.style.display = 'block';
     }
 
-    const response = await fetch(`${API_BASE_URL}/grammar?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+    const keywordParam = grammarSearchKeyword ? `&keyword=${encodeURIComponent(grammarSearchKeyword)}` : '';
+    const response = await fetch(`${API_BASE_URL}/grammar?pageNumber=${pageNumber}&pageSize=${pageSize}${keywordParam}`);
 
     if (!response.ok) {
       throw new Error('Failed to load grammar');
@@ -314,6 +337,7 @@ async function loadGrammar(pageNumber, append = false) {
                     ${item.star ? '★' : '☆'}
                 </button>
                 <div class="main-text">${escapeHtml(item.grammar)}</div>
+                <div class="sub-text">${escapeHtml(item.furigana || '')}</div>
                 <div class="meaning">${escapeHtml(item.meaning)}</div>
             </div>
         `,
@@ -447,6 +471,7 @@ async function loadReviewGrammar(pageNumber, append = false) {
                     ${item.star ? '★' : '☆'}
                 </button>
                 <div class="main-text">${escapeHtml(item.grammar)}</div>
+                <div class="sub-text">${escapeHtml(item.furigana || '')}</div>
                 <div class="meaning">${escapeHtml(item.meaning)}</div>
             </div>
         `,
@@ -579,6 +604,10 @@ function displayCurrentCard() {
           <input type="text" id="edit-grammar" value="${escapeHtml(item.grammar)}" />
         </div>
         <div class="edit-field">
+          <label>Furigana:</label>
+          <input type="text" id="edit-grammar-furigana" value="${escapeHtml(item.furigana || '')}" />
+        </div>
+        <div class="edit-field">
           <label>Meaning:</label>
           <textarea id="edit-meaning">${escapeHtml(item.meaning)}</textarea>
         </div>
@@ -595,6 +624,7 @@ function displayCurrentCard() {
           ${item.star ? '★' : '☆'}
         </button>
         <div class="card-title">${escapeHtml(item.grammar)}</div>
+        ${item.furigana ? `<div class="card-subtitle">${escapeHtml(item.furigana)}</div>` : ''}
         <div class="card-meaning ${shouldHideMeaning ? 'hidden revealable' : ''}"
              ${shouldHideMeaning ? 'onclick="revealContent()"' : ''}>
           ${shouldHideMeaning ? 'Click to reveal' : escapeHtml(item.meaning)}
@@ -657,6 +687,44 @@ function toggleUploadSection(type) {
     uploadSection.style.display = 'none';
     expandButton.style.display = 'block';
   }
+}
+
+// Search vocabulary
+function searchVocabulary() {
+  const searchInput = document.getElementById('vocabulary-search');
+  vocabularySearchKeyword = searchInput.value.trim();
+  vocabularyPage = 1;
+  hasMoreVocabulary = true;
+  loadVocabulary(1, false);
+}
+
+// Clear vocabulary search
+function clearVocabularySearch() {
+  const searchInput = document.getElementById('vocabulary-search');
+  searchInput.value = '';
+  vocabularySearchKeyword = '';
+  vocabularyPage = 1;
+  hasMoreVocabulary = true;
+  loadVocabulary(1, false);
+}
+
+// Search grammar
+function searchGrammar() {
+  const searchInput = document.getElementById('grammar-search');
+  grammarSearchKeyword = searchInput.value.trim();
+  grammarPage = 1;
+  hasMoreGrammar = true;
+  loadGrammar(1, false);
+}
+
+// Clear grammar search
+function clearGrammarSearch() {
+  const searchInput = document.getElementById('grammar-search');
+  searchInput.value = '';
+  grammarSearchKeyword = '';
+  grammarPage = 1;
+  hasMoreGrammar = true;
+  loadGrammar(1, false);
 }
 
 // Toggle star for items in the list
@@ -821,9 +889,11 @@ function updateItemInList(listDiv, type, id, updatedItem) {
         if (meaning) meaning.textContent = updatedItem.meaning;
       } else if (type === 'grammar') {
         const mainText = card.querySelector('.main-text');
+        const subText = card.querySelector('.sub-text');
         const meaning = card.querySelector('.meaning');
 
         if (mainText) mainText.textContent = updatedItem.grammar;
+        if (subText) subText.textContent = updatedItem.furigana || '';
         if (meaning) meaning.textContent = updatedItem.meaning;
       }
     }
@@ -938,6 +1008,7 @@ async function saveChanges() {
       updatedData = { kanji, furigana, meaning };
     } else if (currentItemType === 'grammar') {
       const grammar = document.getElementById('edit-grammar').value.trim();
+      const furigana = document.getElementById('edit-grammar-furigana').value.trim();
       const meaning = document.getElementById('edit-meaning').value.trim();
       const memo = document.getElementById('edit-memo').value.trim();
 
@@ -946,7 +1017,7 @@ async function saveChanges() {
         return;
       }
 
-      updatedData = { grammar, meaning, memo };
+      updatedData = { grammar, furigana, meaning, memo };
     }
 
     // Send PUT request

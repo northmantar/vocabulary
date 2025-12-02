@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { Readable } from 'stream';
 import * as csvParser from 'csv-parser';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { Vocabulary } from 'entities/vocabulary.entity';
 import { Grammar } from 'entities/grammar.entity';
 import { PageOptionsDto } from './page/page-options.dto';
@@ -10,6 +10,7 @@ import { PageMetaDto } from './page/page-meta.dto';
 import { PageDto } from './page/page.dto';
 import { UpdateVocabularyDto } from './dto/update-voca.dto';
 import { UpdateGrammarDto } from './dto/update-grammar.dto';
+import { FindOptionsWhere } from 'typeorm';
 
 @Injectable()
 export class AppService {
@@ -24,12 +25,27 @@ export class AppService {
     return 'Hello World!';
   }
 
-  async getVocabulary(pageOptionsDto: PageOptionsDto, starred: boolean = false) {
+  async getVocabulary(pageOptionsDto: PageOptionsDto, starred: boolean = false, keyword?: string) {
+    let where: FindOptionsWhere<Vocabulary> | FindOptionsWhere<Vocabulary>[] | null = null;
+    if (keyword) {
+      where = [{ kanji: Like(`%${keyword}%`) }, { furigana: Like(`%${keyword}%`) }];
+    }
+    if (starred) {
+      if (Array.isArray(where) && where.length) {
+        where = where.map((item) => {
+          item.star = true;
+          return item;
+        });
+      } else {
+        where = { star: true };
+      }
+    }
+
     const [vocabularies, total] = await this.vocabularyRepository.findAndCount({
       skip: pageOptionsDto.skip,
       take: pageOptionsDto.pageSize,
       order: { star: 'DESC', id: 'DESC' },
-      ...(starred ? { where: { star: true } } : {}),
+      where,
     });
 
     const pageMetaDto = new PageMetaDto({ pageOptionsDto, total });
@@ -91,12 +107,27 @@ export class AppService {
     }
   }
 
-  async getGrammar(pageOptionsDto: PageOptionsDto, starred: boolean = false) {
+  async getGrammar(pageOptionsDto: PageOptionsDto, starred: boolean = false, keyword?: string) {
+    let where: FindOptionsWhere<Grammar> | FindOptionsWhere<Grammar>[] | null = null;
+    if (keyword) {
+      where = [{ grammar: Like(`%${keyword}%`) }, { furigana: Like(`%${keyword}%`) }];
+    }
+    if (starred) {
+      if (Array.isArray(where) && where.length) {
+        where = where.map((item) => {
+          item.star = true;
+          return item;
+        });
+      } else {
+        where = { star: true };
+      }
+    }
+
     const [grammars, total] = await this.grammarRepository.findAndCount({
       skip: pageOptionsDto.skip,
       take: pageOptionsDto.pageSize,
       order: { star: 'DESC', id: 'DESC' },
-      ...(starred ? { where: { star: true } } : {}),
+      where,
     });
 
     const pageMetaDto = new PageMetaDto({ pageOptionsDto, total });
@@ -122,12 +153,13 @@ export class AppService {
 
     const upserts = [];
     bufferStream
-      .pipe(csvParser({ headers: ['grammar', 'meaning', 'memo'], skipLines: 1 }))
+      .pipe(csvParser({ headers: ['grammar', 'furigana', 'meaning', 'memo'], skipLines: 1 }))
       .on('data', (data) => results.push(data))
       .on('end', async () => {
         for (const result of results) {
           upserts.push({
             grammar: result.grammar,
+            furigana: result.furigana,
             meaning: result.meaning,
             memo: result.memo,
           });
@@ -148,6 +180,7 @@ export class AppService {
         throw new NotFoundException('Grammar not found');
       }
       grammar.grammar = updateGrammarDto.grammar;
+      grammar.furigana = updateGrammarDto.furigana;
       grammar.meaning = updateGrammarDto.meaning;
       grammar.memo = updateGrammarDto.memo;
       await this.grammarRepository.save(grammar);

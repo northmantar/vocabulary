@@ -21,8 +21,12 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('vocabulary')
-  async getVocabulary(@Query() pageOptionsDto: PageOptionsDto, @Query('starred') starred: boolean = false) {
-    return this.appService.getVocabulary(pageOptionsDto, starred);
+  async getVocabulary(
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Query('keyword') keyword?: string,
+    @Query('starred') starred: boolean = false,
+  ) {
+    return this.appService.getVocabulary(pageOptionsDto, starred, keyword);
   }
 
   @Get('vocabulary/:id')
@@ -52,8 +56,12 @@ export class AppController {
   }
 
   @Get('grammar')
-  async getGrammar(@Query() pageOptionsDto: PageOptionsDto, @Query('starred') starred: boolean = false) {
-    return this.appService.getGrammar(pageOptionsDto, starred);
+  async getGrammar(
+    @Query() pageOptionsDto: PageOptionsDto,
+    @Query('keyword') keyword?: string,
+    @Query('starred') starred: boolean = false,
+  ) {
+    return this.appService.getGrammar(pageOptionsDto, starred, keyword);
   }
 
   @Get('grammar/:id')
