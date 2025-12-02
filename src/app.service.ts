@@ -11,6 +11,8 @@ import { PageDto } from './page/page.dto';
 import { UpdateVocabularyDto } from './dto/update-voca.dto';
 import { UpdateGrammarDto } from './dto/update-grammar.dto';
 import { FindOptionsWhere } from 'typeorm';
+import { CreateVocabularyDto } from './dto/create-voca.dto';
+import { CreateGrammarDto } from './dto/create-grammar.dto';
 
 @Injectable()
 export class AppService {
@@ -63,6 +65,12 @@ export class AppService {
     return vocabulary;
   }
 
+  async createVocabulary(createVocabularyDto: CreateVocabularyDto) {
+    const vocabulary = this.vocabularyRepository.create(createVocabularyDto);
+    await this.vocabularyRepository.save(vocabulary);
+    return vocabulary;
+  }
+
   async saveVocabularyFile(file: Express.Multer.File) {
     const results: any[] = [];
     const bufferStream = new Readable();
@@ -110,7 +118,11 @@ export class AppService {
   async getGrammar(pageOptionsDto: PageOptionsDto, starred: boolean = false, keyword?: string) {
     let where: FindOptionsWhere<Grammar> | FindOptionsWhere<Grammar>[] | null = null;
     if (keyword) {
-      where = [{ grammar: Like(`%${keyword}%`) }, { furigana: Like(`%${keyword}%`) }, { meaning: Like(`%${keyword}%`) }];
+      where = [
+        { grammar: Like(`%${keyword}%`) },
+        { furigana: Like(`%${keyword}%`) },
+        { meaning: Like(`%${keyword}%`) },
+      ];
     }
     if (starred) {
       if (Array.isArray(where) && where.length) {
@@ -142,6 +154,12 @@ export class AppService {
 
   async getGrammarById(id: number) {
     const grammar = await this.grammarRepository.findOne({ where: { id } });
+    return grammar;
+  }
+
+  async createGrammar(createGrammarDto: CreateGrammarDto) {
+    const grammar = this.grammarRepository.create(createGrammarDto);
+    await this.grammarRepository.save(grammar);
     return grammar;
   }
 

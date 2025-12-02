@@ -15,6 +15,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { PageOptionsDto } from './page/page-options.dto';
 import { UpdateVocabularyDto } from './dto/update-voca.dto';
 import { UpdateGrammarDto } from './dto/update-grammar.dto';
+import { CreateVocabularyDto } from './dto/create-voca.dto';
+import { CreateGrammarDto } from './dto/create-grammar.dto';
 
 @Controller()
 export class AppController {
@@ -35,6 +37,11 @@ export class AppController {
   }
 
   @Post('vocabulary')
+  async createVocabulary(@Body() createVocabularyDto: CreateVocabularyDto) {
+    return this.appService.createVocabulary(createVocabularyDto);
+  }
+  
+  @Post('vocabulary/csv')
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: (_req, file, cb) => {
@@ -70,6 +77,11 @@ export class AppController {
   }
 
   @Post('grammar')
+  async createGrammar(@Body() createGrammarDto: CreateGrammarDto) {
+    return this.appService.createGrammar(createGrammarDto);
+  }
+
+  @Post('grammar/csv')
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: (_req, file, cb) => {

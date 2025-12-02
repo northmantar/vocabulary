@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', function () {
   setupModal();
   setupScrollListeners();
   setupSearchListeners();
+  setupCreateModal();
+  setupFAB();
   loadVocabulary(vocabularyPage);
 });
 
@@ -190,7 +192,7 @@ async function uploadFile(type) {
   try {
     showStatus(statusDiv, 'Uploading...', '');
 
-    const response = await fetch(`${API_BASE_URL}/${type}`, {
+    const response = await fetch(`${API_BASE_URL}/${type}/csv`, {
       method: 'POST',
       body: formData,
     });
@@ -1057,5 +1059,171 @@ async function saveChanges() {
   } catch (error) {
     console.error('Error saving changes:', error);
     alert('수정에 실패했습니다.');
+  }
+}
+
+// Floating Action Button functionality
+function setupFAB() {
+  // Close FAB menu when clicking outside
+  document.addEventListener('click', function (event) {
+    const fabContainer = document.querySelector('.fab-container');
+    const fabMenu = document.getElementById('fab-menu');
+    const fabButton = document.getElementById('fab-button');
+
+    if (!fabContainer.contains(event.target)) {
+      fabMenu.classList.remove('show');
+      fabButton.classList.remove('active');
+    }
+  });
+}
+
+function toggleFabMenu() {
+  const fabMenu = document.getElementById('fab-menu');
+  const fabButton = document.getElementById('fab-button');
+
+  fabMenu.classList.toggle('show');
+  fabButton.classList.toggle('active');
+}
+
+// Create Modal functionality
+function setupCreateModal() {
+  const createModal = document.getElementById('create-modal');
+
+  // Close modal when clicking on the background
+  createModal.addEventListener('click', function (event) {
+    if (event.target === createModal) {
+      closeCreateModal();
+    }
+  });
+}
+
+function openCreateModal(type) {
+  const modal = document.getElementById('create-modal');
+  const title = document.getElementById('create-modal-title');
+  const formContent = document.getElementById('create-form-content');
+
+  // Close FAB menu
+  document.getElementById('fab-menu').classList.remove('show');
+  document.getElementById('fab-button').classList.remove('active');
+
+  if (type === 'vocabulary') {
+    title.textContent = '単語を追加 (たんごをついか, 단어 추가)';
+    formContent.innerHTML = `
+      <div class="create-form">
+        <div class="form-field">
+          <label for="create-kanji">Kanji (漢字) <span style="color: #e74c3c;">*</span></label>
+          <input type="text" id="create-kanji" placeholder="例: 勉強" required />
+        </div>
+        <div class="form-field">
+          <label for="create-furigana">Furigana (ふりがな) <span style="color: #e74c3c;">*</span></label>
+          <input type="text" id="create-furigana" placeholder="例: べんきょう" required />
+        </div>
+        <div class="form-field">
+          <label for="create-meaning">Meaning (의미) <span style="color: #e74c3c;">*</span></label>
+          <input type="text" id="create-meaning" placeholder="例: 공부" required />
+        </div>
+        <div class="form-actions">
+          <button class="submit-button" onclick="submitCreate('vocabulary')">追加 (Add)</button>
+          <button class="cancel-form-button" onclick="closeCreateModal()">キャンセル (Cancel)</button>
+        </div>
+      </div>
+    `;
+  } else if (type === 'grammar') {
+    title.textContent = '文法を追加 (ぶんぽうをついか, 문법 추가)';
+    formContent.innerHTML = `
+      <div class="create-form">
+        <div class="form-field">
+          <label for="create-grammar">Grammar (文法) <span style="color: #e74c3c;">*</span></label>
+          <input type="text" id="create-grammar" placeholder="例: ～ために" required />
+        </div>
+        <div class="form-field">
+          <label for="create-grammar-furigana">Furigana (ふりがな)</label>
+          <input type="text" id="create-grammar-furigana" placeholder="例: ～ために" />
+        </div>
+        <div class="form-field">
+          <label for="create-grammar-meaning">Meaning (의미) <span style="color: #e74c3c;">*</span></label>
+          <textarea id="create-grammar-meaning" placeholder="例: ~하기 위해서, ~때문에" required></textarea>
+        </div>
+        <div class="form-field">
+          <label for="create-memo">Memo (メモ)</label>
+          <textarea id="create-memo" placeholder="例: 用法: V辞書形/Nの + ために"></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="submit-button" onclick="submitCreate('grammar')">追加 (Add)</button>
+          <button class="cancel-form-button" onclick="closeCreateModal()">キャンセル (Cancel)</button>
+        </div>
+      </div>
+    `;
+  }
+
+  modal.classList.add('show');
+}
+
+function closeCreateModal() {
+  const modal = document.getElementById('create-modal');
+  modal.classList.remove('show');
+}
+
+async function submitCreate(type) {
+  let createData = {};
+
+  try {
+    if (type === 'vocabulary') {
+      const kanji = document.getElementById('create-kanji').value.trim();
+      const furigana = document.getElementById('create-furigana').value.trim();
+      const meaning = document.getElementById('create-meaning').value.trim();
+
+      if (!kanji || !furigana || !meaning) {
+        alert('すべての必須項目を入力してください。 (모든 필수 항목을 입력해주세요.)');
+        return;
+      }
+
+      createData = { kanji, furigana, meaning };
+    } else if (type === 'grammar') {
+      const grammar = document.getElementById('create-grammar').value.trim();
+      const furigana = document.getElementById('create-grammar-furigana').value.trim();
+      const meaning = document.getElementById('create-grammar-meaning').value.trim();
+      const memo = document.getElementById('create-memo').value.trim();
+
+      if (!grammar || !meaning) {
+        alert('文法と意味を入力してください。 (문법과 의미를 입력해주세요.)');
+        return;
+      }
+
+      createData = { grammar, furigana, meaning, memo };
+    }
+
+    // Send POST request
+    const response = await fetch(`${API_BASE_URL}/${type}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(createData),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error || 'Failed to create item');
+    }
+
+    // Close modal
+    closeCreateModal();
+
+    // Reload the appropriate list
+    if (type === 'vocabulary') {
+      vocabularyPage = 1;
+      hasMoreVocabulary = true;
+      loadVocabulary(1, false);
+    } else if (type === 'grammar') {
+      grammarPage = 1;
+      hasMoreGrammar = true;
+      loadGrammar(1, false);
+    }
+
+    alert('追加完了！ (추가 완료!)');
+  } catch (error) {
+    console.error('Error creating item:', error);
+    alert(`追加に失敗しました: ${error.message} (추가에 실패했습니다)`);
   }
 }
