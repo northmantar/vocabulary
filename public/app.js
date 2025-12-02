@@ -75,12 +75,13 @@ function setupModal() {
     modal.classList.remove('show');
   };
 
-  window.onclick = function (event) {
+  // Close modal when clicking on the background (modal overlay)
+  modal.addEventListener('click', function (event) {
     if (event.target === modal) {
       resetEditMode();
       modal.classList.remove('show');
     }
-  };
+  });
 }
 
 // Reset edit mode when closing modal
@@ -793,16 +794,16 @@ function updateListItem(type, id, updatedItem) {
   const reviewListDiv = document.getElementById(`review-${type}-list`);
 
   // Update in main list
-  updateItemInList(listDiv, type, id, updatedItem, false);
+  updateItemInList(listDiv, type, id, updatedItem);
 
   // Update in review list if it exists
   if (currentTab === 'review') {
-    updateItemInList(reviewListDiv, type, id, updatedItem, true);
+    updateItemInList(reviewListDiv, type, id, updatedItem);
   }
 }
 
 // Helper function to update a specific item card in a list
-function updateItemInList(listDiv, type, id, updatedItem, isReview) {
+function updateItemInList(listDiv, type, id, updatedItem) {
   const cards = listDiv.querySelectorAll('.item-card');
 
   cards.forEach((card) => {
