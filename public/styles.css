@@ -1064,6 +1064,7 @@ button:active {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    cursor: pointer;
 }
 
 .honorific-item:hover {
@@ -1142,4 +1143,37 @@ button:active {
         font-size: 20px;
         margin: 4px 0;
     }
+}
+
+/* Honorific Card Modal Styles */
+.honorific-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.honorific-card-section {
+    text-align: center;
+}
+
+.honorific-card-label {
+    font-size: 14px;
+    color: #666;
+    font-weight: 600;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.honorific-card-honorific {
+    color: #4a90e2;
+}
+
+.honorific-card-arrow {
+    text-align: center;
+    font-size: 36px;
+    color: #4a90e2;
+    font-weight: bold;
+    margin: 10px 0;
 }

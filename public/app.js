@@ -28,6 +28,13 @@ let isRevealed = false;
 let isEditMode = false;
 let originalItemData = null;
 
+// Honorific data cache
+let honorificData = {
+  UP: [],
+  DOWN: [],
+  NORMAL: []
+};
+
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
   setupTabs();
@@ -99,6 +106,10 @@ function resetEditMode() {
     document.getElementById('edit-button').style.display = 'inline-block';
     document.getElementById('save-button').style.display = 'none';
     document.getElementById('cancel-button').style.display = 'none';
+  }
+  // Show edit button again for non-honorific items
+  if (currentItemType !== 'honorific') {
+    document.getElementById('edit-button').style.display = 'inline-block';
   }
 }
 
@@ -525,11 +536,14 @@ async function loadHonorifics(type) {
       return;
     }
 
+    // Store data for modal navigation
+    honorificData[type] = data;
+
     // Render honorific items
     const itemsHtml = data
       .map(
-        (item) => `
-          <div class="honorific-item">
+        (item, index) => `
+          <div class="honorific-item" onclick="showHonorificCard('${type}', ${index})">
             <div class="honorific-row">
               <div class="honorific-label">Plain:</div>
               <div class="honorific-value">
@@ -555,6 +569,24 @@ async function loadHonorifics(type) {
   } catch (error) {
     listDiv.innerHTML = `<div class="error">Error loading honorifics: ${error.message}</div>`;
   }
+}
+
+// Show honorific card in modal
+function showHonorificCard(type, index) {
+  currentItemList = honorificData[type];
+  currentItemType = 'honorific';
+  currentItemIndex = index;
+  isReviewMode = false;
+  isRevealed = false;
+
+  if (!currentItemList || currentItemList.length === 0) {
+    alert('No honorific data available.');
+    return;
+  }
+
+  displayCurrentCard();
+  updateNavigationButtons();
+  document.getElementById('card-modal').classList.add('show');
 }
 
 // Show vocabulary card in modal
@@ -614,7 +646,30 @@ function displayCurrentCard() {
   const item = currentItemList[currentItemIndex];
   const cardContent = document.getElementById('card-content');
 
-  if (currentItemType === 'vocabulary') {
+  if (currentItemType === 'honorific') {
+    // Honorific items don't have edit mode or star functionality
+    cardContent.innerHTML = `
+      <div class="honorific-card">
+        <div class="honorific-card-section">
+          <div class="honorific-card-label">Plain Form (普通形)</div>
+          <div class="card-title">${escapeHtml(item.plain)}</div>
+          ${item.plainFurigana ? `<div class="card-subtitle">${escapeHtml(item.plainFurigana)}</div>` : ''}
+        </div>
+        <div class="honorific-card-arrow">↓</div>
+        <div class="honorific-card-section">
+          <div class="honorific-card-label">Honorific Form (敬語形)</div>
+          <div class="card-title honorific-card-honorific">${escapeHtml(item.honorific)}</div>
+          ${item.honorificFurigana ? `<div class="card-subtitle">${escapeHtml(item.honorificFurigana)}</div>` : ''}
+        </div>
+        ${item.meaning ? `<div class="card-memo">${escapeHtmlWithNewlines(item.meaning)}</div>` : ''}
+      </div>
+    `;
+
+    // Hide edit button for honorifics
+    document.getElementById('edit-button').style.display = 'none';
+    document.getElementById('save-button').style.display = 'none';
+    document.getElementById('cancel-button').style.display = 'none';
+  } else if (currentItemType === 'vocabulary') {
     const shouldHideFurigana = isReviewMode && !isRevealed;
 
     if (isEditMode) {
