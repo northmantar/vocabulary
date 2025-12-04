@@ -15,6 +15,7 @@
         <div class="tabs">
             <button class="tab-button active" data-tab="vocabulary">単語(たんご, 단어)</button>
             <button class="tab-button" data-tab="grammar">文法(ぶんぽう, 문법)</button>
+            <button class="tab-button" data-tab="honorific">敬語(けいご, 경어)</button>
             <button class="tab-button" data-tab="review">復習(ふくしゅう, 복습)</button>
         </div>
 
@@ -111,6 +112,32 @@
                 <div class="list-title"><h2>文法リスト</h2><p>(ぶんぽうりすと, 문법 리스트)</p></div>
                 <div id="grammar-list" class="item-list scrollable-list"></div>
                 <div id="grammar-loading" class="loading-indicator" style="display: none;">Loading more...</div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="honorific-tab">
+            <div class="list-section">
+                <div class="honorific-section-title">
+                    <h2>尊敬語</h2>
+                    <p>(そんけいご, 존경어 - Elevates the listener)</p>
+                </div>
+                <div id="honorific-up-list" class="honorific-list"></div>
+            </div>
+
+            <div class="list-section">
+                <div class="honorific-section-title">
+                    <h2>謙譲語</h2>
+                    <p>(けんじょうご, 겸양어 - Lowers the speaker)</p>
+                </div>
+                <div id="honorific-down-list" class="honorific-list"></div>
+            </div>
+
+            <div class="list-section">
+                <div class="honorific-section-title">
+                    <h2>丁寧語</h2>
+                    <p>(ていねいご, 정중어 - Polite/neutral)</p>
+                </div>
+                <div id="honorific-normal-list" class="honorific-list"></div>
             </div>
         </div>
 

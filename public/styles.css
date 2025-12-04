@@ -660,6 +660,9 @@ button:active {
     font-size: 20px;
     color: #666;
     margin-bottom: 10px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.6;
 }
 
 .card .card-memo {
@@ -670,6 +673,9 @@ button:active {
     background: #f9f9f9;
     border-radius: 8px;
     border-left: 4px solid #4a90e2;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.6;
 }
 
 .loading {
@@ -1024,4 +1030,116 @@ button:active {
 
 .cancel-form-button:hover {
     background: #5a6268;
+}
+
+/* Honorific Tab Styles */
+.honorific-section-title {
+    margin-bottom: 20px;
+}
+
+.honorific-section-title h2 {
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.honorific-section-title p {
+    color: #666;
+    font-size: 14px;
+    font-style: italic;
+}
+
+.honorific-list {
+    display: grid;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.honorific-item {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.honorific-item:hover {
+    border-color: #4a90e2;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+}
+
+.honorific-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.honorific-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 14px;
+    min-width: 80px;
+}
+
+.honorific-value {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.honorific-text {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.honorific-text-honorific {
+    color: #4a90e2;
+}
+
+.honorific-furigana {
+    font-size: 14px;
+    color: #888;
+}
+
+.honorific-arrow {
+    text-align: center;
+    font-size: 24px;
+    color: #4a90e2;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+.honorific-meaning {
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    border-left: 4px solid #4a90e2;
+    color: #666;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+    .honorific-item {
+        padding: 15px;
+    }
+
+    .honorific-text {
+        font-size: 18px;
+    }
+
+    .honorific-label {
+        min-width: 60px;
+        font-size: 12px;
+    }
+
+    .honorific-arrow {
+        font-size: 20px;
+        margin: 4px 0;
+    }
 }

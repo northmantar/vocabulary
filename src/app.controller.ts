@@ -17,6 +17,7 @@ import { UpdateVocabularyDto } from './dto/update-voca.dto';
 import { UpdateGrammarDto } from './dto/update-grammar.dto';
 import { CreateVocabularyDto } from './dto/create-voca.dto';
 import { CreateGrammarDto } from './dto/create-grammar.dto';
+import { HonorificType } from 'entities/enum/honorific-type.enum';
 
 @Controller()
 export class AppController {
@@ -40,7 +41,7 @@ export class AppController {
   async createVocabulary(@Body() createVocabularyDto: CreateVocabularyDto) {
     return this.appService.createVocabulary(createVocabularyDto);
   }
-  
+
   @Post('vocabulary/csv')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -110,5 +111,10 @@ export class AppController {
   @Post('grammar/:id/star')
   async starGrammar(@Param('id') id: number) {
     return await this.appService.starGrammar(id);
+  }
+
+  @Get('honorific')
+  async getHonorific(@Query('type') type: HonorificType = HonorificType.NORMAL) {
+    return this.appService.getHonorific(type);
   }
 }

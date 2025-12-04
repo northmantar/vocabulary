@@ -13,6 +13,8 @@ import { UpdateGrammarDto } from './dto/update-grammar.dto';
 import { FindOptionsWhere } from 'typeorm';
 import { CreateVocabularyDto } from './dto/create-voca.dto';
 import { CreateGrammarDto } from './dto/create-grammar.dto';
+import { HonorificType } from 'entities/enum/honorific-type.enum';
+import { Honorific } from 'entities/honorific.entity';
 
 @Injectable()
 export class AppService {
@@ -21,6 +23,8 @@ export class AppService {
     private readonly vocabularyRepository: Repository<Vocabulary>,
     @InjectRepository(Grammar)
     private readonly grammarRepository: Repository<Grammar>,
+    @InjectRepository(Honorific)
+    private readonly honorificRepository: Repository<Honorific>,
   ) {}
 
   getHello(): string {
@@ -221,5 +225,10 @@ export class AppService {
     grammar.star = !grammar.star;
     await this.grammarRepository.save(grammar);
     return { success: true };
+  }
+
+  async getHonorific(type: HonorificType) {
+    const honorifics = await this.honorificRepository.find({ where: { type } });
+    return honorifics;
   }
 }

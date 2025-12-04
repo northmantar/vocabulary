@@ -62,6 +62,8 @@ function setupTabs() {
         loadVocabulary(vocabularyPage);
       } else if (tabName === 'grammar') {
         loadGrammar(grammarPage);
+      } else if (tabName === 'honorific') {
+        loadAllHonorifics();
       } else if (tabName === 'review') {
         loadReviewVocabulary(reviewVocabularyPage);
         loadReviewGrammar(reviewGrammarPage);
@@ -496,6 +498,65 @@ async function loadReviewGrammar(pageNumber, append = false) {
 }
 
 
+// Load all honorifics
+async function loadAllHonorifics() {
+  loadHonorifics('UP');
+  loadHonorifics('DOWN');
+  loadHonorifics('NORMAL');
+}
+
+// Load honorifics by type
+async function loadHonorifics(type) {
+  const listDiv = document.getElementById(`honorific-${type.toLowerCase()}-list`);
+
+  try {
+    listDiv.innerHTML = '<div class="loading">Loading...</div>';
+
+    const response = await fetch(`${API_BASE_URL}/honorific?type=${type}`);
+
+    if (!response.ok) {
+      throw new Error('Failed to load honorifics');
+    }
+
+    const data = await response.json();
+
+    if (!data || data.length === 0) {
+      listDiv.innerHTML = '<div class="empty">No honorifics available for this type.</div>';
+      return;
+    }
+
+    // Render honorific items
+    const itemsHtml = data
+      .map(
+        (item) => `
+          <div class="honorific-item">
+            <div class="honorific-row">
+              <div class="honorific-label">Plain:</div>
+              <div class="honorific-value">
+                <span class="honorific-text">${escapeHtml(item.plain)}</span>
+                ${item.plainFurigana ? `<span class="honorific-furigana">${escapeHtml(item.plainFurigana)}</span>` : ''}
+              </div>
+            </div>
+            <div class="honorific-arrow">→</div>
+            <div class="honorific-row">
+              <div class="honorific-label">Honorific:</div>
+              <div class="honorific-value">
+                <span class="honorific-text honorific-text-honorific">${escapeHtml(item.honorific)}</span>
+                ${item.honorificFurigana ? `<span class="honorific-furigana">${escapeHtml(item.honorificFurigana)}</span>` : ''}
+              </div>
+            </div>
+            ${item.meaning ? `<div class="honorific-meaning">${escapeHtml(item.meaning)}</div>` : ''}
+          </div>
+        `,
+      )
+      .join('');
+
+    listDiv.innerHTML = itemsHtml;
+  } catch (error) {
+    listDiv.innerHTML = `<div class="error">Error loading honorifics: ${error.message}</div>`;
+  }
+}
+
 // Show vocabulary card in modal
 async function showVocabularyCard(id, reviewMode = false) {
   try {
@@ -588,7 +649,7 @@ function displayCurrentCard() {
              ${shouldHideFurigana ? 'onclick="revealContent()"' : ''}>
           ${shouldHideFurigana ? 'Click to reveal' : escapeHtml(item.furigana)}
         </div>
-        <div class="card-meaning">${escapeHtml(item.meaning)}</div>
+        <div class="card-meaning">${escapeHtmlWithNewlines(item.meaning)}</div>
       `;
     }
   } else if (currentItemType === 'grammar') {
@@ -629,9 +690,9 @@ function displayCurrentCard() {
         ${item.furigana ? `<div class="card-subtitle">${escapeHtml(item.furigana)}</div>` : ''}
         <div class="card-meaning ${shouldHideMeaning ? 'hidden revealable' : ''}"
              ${shouldHideMeaning ? 'onclick="revealContent()"' : ''}>
-          ${shouldHideMeaning ? 'Click to reveal' : escapeHtml(item.meaning)}
+          ${shouldHideMeaning ? 'Click to reveal' : escapeHtmlWithNewlines(item.meaning)}
         </div>
-        ${item.memo ? `<div class="card-memo">${escapeHtml(item.memo)}</div>` : ''}
+        ${item.memo ? `<div class="card-memo">${escapeHtmlWithNewlines(item.memo)}</div>` : ''}
       `;
     }
   }
@@ -673,6 +734,13 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+// Utility function to escape HTML and preserve newlines
+function escapeHtmlWithNewlines(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML.replace(/\n/g, '<br>');
 }
 
 // Toggle upload section visibility
