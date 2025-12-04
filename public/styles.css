@@ -1107,13 +1107,6 @@ button:active {
     color: #888;
 }
 
-.honorific-arrow {
-    text-align: center;
-    font-size: 24px;
-    color: #4a90e2;
-    font-weight: bold;
-    margin: 8px 0;
-}
 
 .honorific-meaning {
     padding: 12px;
@@ -1139,9 +1132,9 @@ button:active {
         font-size: 12px;
     }
 
-    .honorific-arrow {
-        font-size: 20px;
-        margin: 4px 0;
+    .honorific-type-badge {
+        font-size: 11px;
+        padding: 5px 10px;
     }
 }
 
@@ -1149,31 +1142,45 @@ button:active {
 .honorific-card {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
     padding: 20px 0;
+    align-items: center;
+}
+
+.honorific-type-badge {
+    align-self: flex-start;
+    background: #4a90e2;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
 }
 
 .honorific-card-section {
     text-align: center;
+    width: 100%;
+}
+
+.honorific-card-section .card-title {
+    font-size: 32px;
+}
+
+.honorific-card-section .card-subtitle {
+    font-size: 20px;
 }
 
 .honorific-card-label {
-    font-size: 14px;
+    font-size: 12px;
     color: #666;
     font-weight: 600;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .honorific-card-honorific {
-    color: #4a90e2;
-}
-
-.honorific-card-arrow {
-    text-align: center;
-    font-size: 36px;
-    color: #4a90e2;
-    font-weight: bold;
-    margin: 10px 0;
+    color: #4a90e2 !important;
 }

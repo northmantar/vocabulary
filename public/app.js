@@ -545,21 +545,18 @@ async function loadHonorifics(type) {
         (item, index) => `
           <div class="honorific-item" onclick="showHonorificCard('${type}', ${index})">
             <div class="honorific-row">
-              <div class="honorific-label">Plain:</div>
-              <div class="honorific-value">
-                <span class="honorific-text">${escapeHtml(item.plain)}</span>
-                ${item.plainFurigana ? `<span class="honorific-furigana">${escapeHtml(item.plainFurigana)}</span>` : ''}
-              </div>
-            </div>
-            <div class="honorific-arrow">→</div>
-            <div class="honorific-row">
               <div class="honorific-label">Honorific:</div>
               <div class="honorific-value">
-                <span class="honorific-text honorific-text-honorific">${escapeHtml(item.honorific)}</span>
-                ${item.honorificFurigana ? `<span class="honorific-furigana">${escapeHtml(item.honorificFurigana)}</span>` : ''}
+                <span class="honorific-text honorific-text-honorific">${escapeHtml(item.kanji)}</span>
+                ${item.furigana ? `<span class="honorific-furigana">${escapeHtml(item.furigana)}</span>` : ''}
               </div>
             </div>
-            ${item.meaning ? `<div class="honorific-meaning">${escapeHtml(item.meaning)}</div>` : ''}
+            <div class="honorific-row">
+              <div class="honorific-label">Plain:</div>
+              <div class="honorific-value">
+                <span class="honorific-text">${escapeHtml(item.meaning || '')}</span>
+              </div>
+            </div>
           </div>
         `,
       )
@@ -578,6 +575,9 @@ function showHonorificCard(type, index) {
   currentItemIndex = index;
   isReviewMode = false;
   isRevealed = false;
+
+  // Store the type for badge display
+  currentItemList.honorificType = type;
 
   if (!currentItemList || currentItemList.length === 0) {
     alert('No honorific data available.');
@@ -648,20 +648,25 @@ function displayCurrentCard() {
 
   if (currentItemType === 'honorific') {
     // Honorific items don't have edit mode or star functionality
+    const typeLabels = {
+      'UP': '존경어',
+      'DOWN': '겸양어',
+      'NORMAL': '정중어'
+    };
+    const typeBadge = typeLabels[currentItemList.honorificType] || '';
+
     cardContent.innerHTML = `
       <div class="honorific-card">
-        <div class="honorific-card-section">
-          <div class="honorific-card-label">Plain Form (普通形)</div>
-          <div class="card-title">${escapeHtml(item.plain)}</div>
-          ${item.plainFurigana ? `<div class="card-subtitle">${escapeHtml(item.plainFurigana)}</div>` : ''}
-        </div>
-        <div class="honorific-card-arrow">↓</div>
+        <div class="honorific-type-badge">${typeBadge}</div>
         <div class="honorific-card-section">
           <div class="honorific-card-label">Honorific Form (敬語形)</div>
-          <div class="card-title honorific-card-honorific">${escapeHtml(item.honorific)}</div>
-          ${item.honorificFurigana ? `<div class="card-subtitle">${escapeHtml(item.honorificFurigana)}</div>` : ''}
+          <div class="card-title honorific-card-honorific">${escapeHtml(item.kanji)}</div>
+          ${item.furigana ? `<div class="card-subtitle honorific-card-honorific">${escapeHtml(item.furigana)}</div>` : ''}
         </div>
-        ${item.meaning ? `<div class="card-memo">${escapeHtmlWithNewlines(item.meaning)}</div>` : ''}
+        <div class="honorific-card-section">
+          <div class="honorific-card-label">Plain Form (普通形)</div>
+          <div class="card-title">${escapeHtml(item.meaning || '')}</div>
+        </div>
       </div>
     `;
 
