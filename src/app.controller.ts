@@ -117,4 +117,14 @@ export class AppController {
   async getHonorific(@Query('type') type: HonorificType = HonorificType.NORMAL) {
     return this.appService.getHonorific(type);
   }
+
+  @Get('ri-adverb')
+  async getRiAdverb() {
+    return this.appService.getRiAdverb();
+  }
+
+  @Get('onomatopoeia')
+  async getOnomatopoeia() {
+    return this.appService.getOnomatopoeia();
+  }
 }

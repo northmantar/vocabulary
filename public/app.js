@@ -71,6 +71,10 @@ function setupTabs() {
         loadGrammar(grammarPage);
       } else if (tabName === 'honorific') {
         loadAllHonorifics();
+      } else if (tabName === 'ri-adverb') {
+        loadRiAdverbs();
+      } else if (tabName === 'onomatopoeia') {
+        loadOnomatopoeia();
       } else if (tabName === 'review') {
         loadReviewVocabulary(reviewVocabularyPage);
         loadReviewGrammar(reviewGrammarPage);
@@ -587,6 +591,106 @@ function showHonorificCard(type, index) {
   displayCurrentCard();
   updateNavigationButtons();
   document.getElementById('card-modal').classList.add('show');
+}
+
+// Load ri-adverbs
+async function loadRiAdverbs() {
+  const listDiv = document.getElementById('ri-adverb-list');
+
+  try {
+    listDiv.innerHTML = '<div class="loading">Loading...</div>';
+
+    const response = await fetch(`${API_BASE_URL}/ri-adverb`);
+
+    if (!response.ok) {
+      throw new Error('Failed to load ri-adverbs');
+    }
+
+    const data = await response.json();
+
+    if (!data || data.length === 0) {
+      listDiv.innerHTML = '<div class="empty">No ri-adverbs available.</div>';
+      return;
+    }
+
+    // Render ri-adverb items
+    const itemsHtml = data
+      .map(
+        (item) => `
+          <div class="item-card ri-adverb-card">
+            <div class="main-text">${escapeHtml(item.kanji)}</div>
+            ${item.furigana ? `<div class="sub-text">${escapeHtml(item.furigana)}</div>` : ''}
+            <div class="meaning">${escapeHtml(item.meaning)}</div>
+          </div>
+        `,
+      )
+      .join('');
+
+    listDiv.innerHTML = itemsHtml;
+  } catch (error) {
+    listDiv.innerHTML = `<div class="error">Error loading ri-adverbs: ${error.message}</div>`;
+  }
+}
+
+// Load onomatopoeia grouped by category
+async function loadOnomatopoeia() {
+  const containerDiv = document.getElementById('onomatopoeia-container');
+
+  try {
+    containerDiv.innerHTML = '<div class="loading">Loading...</div>';
+
+    const response = await fetch(`${API_BASE_URL}/onomatopoeia`);
+
+    if (!response.ok) {
+      throw new Error('Failed to load onomatopoeia');
+    }
+
+    const data = await response.json();
+
+    if (!data || data.length === 0) {
+      containerDiv.innerHTML = '<div class="empty">No onomatopoeia available.</div>';
+      return;
+    }
+
+    // Group by category
+    const grouped = data.reduce((acc, item) => {
+      const category = item.category || 'Other';
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(item);
+      return acc;
+    }, {});
+
+    // Render grouped onomatopoeia
+    const categoriesHtml = Object.keys(grouped)
+      .sort()
+      .map(
+        (category) => `
+          <div class="onomatopoeia-category">
+            <h3 class="category-title">${escapeHtml(category)}</h3>
+            <div class="item-list onomatopoeia-grid">
+              ${grouped[category]
+                .map(
+                  (item) => `
+                  <div class="item-card onomatopoeia-card">
+                    <div class="main-text">${escapeHtml(item.kanji)}</div>
+                    ${item.furigana ? `<div class="sub-text">${escapeHtml(item.furigana)}</div>` : ''}
+                    <div class="meaning">${escapeHtml(item.meaning)}</div>
+                  </div>
+                `,
+                )
+                .join('')}
+            </div>
+          </div>
+        `,
+      )
+      .join('');
+
+    containerDiv.innerHTML = categoriesHtml;
+  } catch (error) {
+    containerDiv.innerHTML = `<div class="error">Error loading onomatopoeia: ${error.message}</div>`;
+  }
 }
 
 // Show vocabulary card in modal

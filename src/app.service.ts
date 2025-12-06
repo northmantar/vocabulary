@@ -15,6 +15,8 @@ import { CreateVocabularyDto } from './dto/create-voca.dto';
 import { CreateGrammarDto } from './dto/create-grammar.dto';
 import { HonorificType } from 'entities/enum/honorific-type.enum';
 import { Honorific } from 'entities/honorific.entity';
+import { RiAdverb } from 'entities/ri-adverb.entity';
+import { Onomatopoeia } from 'entities/onomatopoeia.entity';
 
 @Injectable()
 export class AppService {
@@ -25,6 +27,10 @@ export class AppService {
     private readonly grammarRepository: Repository<Grammar>,
     @InjectRepository(Honorific)
     private readonly honorificRepository: Repository<Honorific>,
+    @InjectRepository(RiAdverb)
+    private readonly riAdverbRepository: Repository<RiAdverb>,
+    @InjectRepository(Onomatopoeia)
+    private readonly onomatopoeiaRepository: Repository<Onomatopoeia>,
   ) {}
 
   getHello(): string {
@@ -230,5 +236,15 @@ export class AppService {
   async getHonorific(type: HonorificType) {
     const honorifics = await this.honorificRepository.find({ where: { type } });
     return honorifics;
+  }
+
+  async getRiAdverb() {
+    const riAdverbs = await this.riAdverbRepository.find();
+    return riAdverbs;
+  }
+
+  async getOnomatopoeia() {
+    const onomatopoeias = await this.onomatopoeiaRepository.find();
+    return onomatopoeias;
   }
 }
